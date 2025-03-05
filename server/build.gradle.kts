@@ -12,6 +12,8 @@ application {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor")
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.content.negotiation)
@@ -25,5 +27,8 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     testImplementation(libs.ktor.server.tests)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.json.v161)
+
     testImplementation(libs.kotlin.test.junit)
 }

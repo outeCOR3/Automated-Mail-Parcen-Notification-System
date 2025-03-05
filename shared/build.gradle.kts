@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -21,9 +22,16 @@ kotlin {
     jvm()
     
     sourceSets {
-        commonMain.dependencies {
+            commonMain.dependencies {
+                implementation(libs.kotlinx.serialization.json.v161)
 
-        }
+                implementation(libs.ktor.server.content.negotiation)
+                implementation(libs.ktor.serialization.kotlinx.json)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.serialization.json)
+
+
+            }
     }
 }
 

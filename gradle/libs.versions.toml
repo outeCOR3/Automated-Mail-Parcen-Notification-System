@@ -1,4 +1,5 @@
 [versions]
+
 agp = "8.8.2"
 android-compileSdk = "35"
 android-minSdk = "24"
@@ -17,7 +18,10 @@ compose-multiplatform = "1.7.0"
 junit = "4.13.2"
 kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
+kotlinxSerializationJson = "1.8.0"
+kotlinxSerializationJsonVersion = "1.6.1"
 ktor = "2.3.12"
+ktorServerCore = "2.3.12"
 lifecycleRuntimeKtx = "2.6.2"
 logback = "1.5.16"
 exposed = "0.59.0"
@@ -47,6 +51,9 @@ compose-animation = { group = "org.jetbrains.compose.animation", name = "animati
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+kotlinx-serialization-json-v161 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
+ktor-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktorServerCore" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
@@ -55,7 +62,7 @@ ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -82,3 +89,4 @@ composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "k
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version = "1.9.0" }
