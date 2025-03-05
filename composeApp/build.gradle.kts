@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.androidx.material3.v131)
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
+            implementation(libs.ktor.client.android)
 
 
         }
@@ -55,13 +56,17 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(projects.shared)
-
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
             }
 
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.cio)
+
         }
     }
 }

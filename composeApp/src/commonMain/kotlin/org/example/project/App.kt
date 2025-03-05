@@ -1,56 +1,45 @@
 package org.example.project
 
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.material3.MaterialTheme
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.launch
 
-
-
-
-
-@Preview
 @Composable
-
-fun App() {
+fun App(client: HttpClient) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
+    var loginResponse by remember { mutableStateOf<String?>(null) }
 
-    // Define your color scheme properly
+    val scope = rememberCoroutineScope()
+
     val customColorScheme = lightColorScheme(
-        primary = Color(0xFF6200EE),  // Custom Purple
+        primary = Color(0xFF6200EE),
         onPrimary = Color.White,
         background = Color(0xFFF5F5F5),
         onBackground = Color.Black
     )
 
-    // ✅ Apply the custom color scheme here
     MaterialTheme(colorScheme = customColorScheme) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -62,11 +51,7 @@ fun App() {
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Welcome Back!",
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text(text = "Welcome Back!", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -89,8 +74,7 @@ fun App() {
                     trailingIcon = {
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
                             Icon(
-                                imageVector = if (passwordVisible) Icons.Filled.Visibility
-                                else Icons.Filled.VisibilityOff,
+                                imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                 contentDescription = "Toggle password visibility"
                             )
                         }
@@ -122,7 +106,11 @@ fun App() {
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = { /* Handle Login */ },
+                    onClick = {
+                        scope.launch {
+                            loginResponse = login(client, email, password)
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
@@ -130,8 +118,24 @@ fun App() {
                 ) {
                     Text(text = "Log In", fontSize = 18.sp)
                 }
+
+                loginResponse?.let {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(text = it, color = Color.Red)
+                }
             }
         }
     }
 }
 
+// ✅ Correct Login Function
+suspend fun login(client: HttpClient, email: String, password: String): String {
+    return try {
+        val response: HttpResponse = client.get("http://192.168.68.146:4545/users") {
+       // ✅ Ensure proper request body
+        }
+        response.body() // ✅ Get response body properly
+    } catch (e: Exception) {
+        "Login failed: ${e.message}" // ✅ Show error message
+    }
+}

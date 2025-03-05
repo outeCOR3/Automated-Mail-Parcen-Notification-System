@@ -21,6 +21,7 @@ kotlinx-coroutines = "1.10.1"
 kotlinxSerializationJson = "1.8.0"
 kotlinxSerializationJsonVersion = "1.6.1"
 ktor = "2.3.12"
+ktorClientAndroid = "2.3.12"
 ktorServerCore = "2.3.12"
 lifecycleRuntimeKtx = "2.6.2"
 logback = "1.5.16"
@@ -53,6 +54,7 @@ exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exp
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-json-v161 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktorServerCore" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
