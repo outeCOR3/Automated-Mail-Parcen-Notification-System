@@ -1,6 +1,6 @@
 package org.example.project
 
-import android.os.Bundle
+import  android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import io.ktor.client.*
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         val client = HttpClient(Android)  // Create HttpClient instance for Android
 
         setContent {
-            App(client)  // Pass client to App()
+            App()  // Pass client to App()
         }
     }
 }
