@@ -18,7 +18,7 @@ import org.example.project.model.Users
 
 
 fun main() {
-    embeddedServer(Netty, port = 4545, host = "192.168.68.146", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
         .start(wait = true)
 }
 
@@ -29,8 +29,8 @@ fun Application.module() {
 
     val userRepository = InMemoryUserRepository()
 
-        routing {
-            get("/") { // Simple route test
+    routing {
+        get("/") { // Simple route test
                 call.respondText("Hello, Ktor!")
             }
 

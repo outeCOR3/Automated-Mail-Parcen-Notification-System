@@ -17,7 +17,7 @@ fun createHttpClient() = HttpClient {
         })
     }
     defaultRequest {
-        host = "192.168.68.146"
-        port = 4545
+        host = "192.168.8.132"
+        port = 8080
     }
 }

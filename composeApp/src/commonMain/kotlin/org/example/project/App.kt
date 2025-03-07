@@ -131,7 +131,7 @@ fun App(client: HttpClient) {
 // ✅ Correct Login Function
 suspend fun login(client: HttpClient, email: String, password: String): String {
     return try {
-        val response: HttpResponse = client.get("http://192.168.68.146:4545/users") {
+        val response: HttpResponse = client.get("http://192.168.8.132:8080/users") {
        // ✅ Ensure proper request body
         }
         response.body() // ✅ Get response body properly
