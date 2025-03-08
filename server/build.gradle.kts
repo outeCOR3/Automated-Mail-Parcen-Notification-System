@@ -12,8 +12,9 @@ application {
 }
 
 dependencies {
-    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktor")
+    implementation(libs.jbcrypt)
+
+    implementation(libs.exposed.java.time.v0440)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.content.negotiation)
@@ -23,12 +24,16 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.postgresql)
     implementation(projects.shared)
+    implementation(projects.composeApp)
     implementation(libs.logback)
+    implementation(libs.ktor.server.auth)
+    implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
     testImplementation(libs.ktor.server.tests)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json.v161)
+    implementation(libs.hikari)
 
     testImplementation(libs.kotlin.test.junit)
 }

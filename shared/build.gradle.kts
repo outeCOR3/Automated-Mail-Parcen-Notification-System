@@ -18,13 +18,12 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    
+
     jvm()
-    
+
     sourceSets {
             commonMain.dependencies {
                 implementation(libs.kotlinx.serialization.json.v161)
-
                 implementation(libs.ktor.server.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.json)
@@ -32,9 +31,16 @@ kotlin {
 
 
             }
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.exposed.core)
+                implementation(libs.exposed.dao)
+                implementation(libs.exposed.jdbc)
+                implementation(libs.exposed.java.time)
+            }
+        }
     }
 }
-
 android {
     namespace = "org.example.project.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
