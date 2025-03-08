@@ -12,7 +12,7 @@ import org.example.project.model.LoginResponse
 
 class LoginService(private val client: HttpClient) {
     var errorMessage: String? = null
-
+    private var userRole: String? = null
     suspend fun login(email: String, password: String): Boolean {
         errorMessage = null
 
@@ -25,6 +25,7 @@ class LoginService(private val client: HttpClient) {
             if (response.status == HttpStatusCode.OK) {
                 val responseBody = response.body<LoginResponse>()
                 saveToken(responseBody.token)
+                userRole = responseBody.role
                 true
             } else {
                 errorMessage = "Login failed: ${response.status}"
@@ -34,6 +35,9 @@ class LoginService(private val client: HttpClient) {
             errorMessage = "Error during login: ${e.message}"
             false
         }
+    }
+    fun getUserRole(): String? {
+        return userRole
     }
 
 
