@@ -35,23 +35,23 @@ kotlin {
         
         androidMain.dependencies {
 
-            implementation(compose.preview)
+
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.runtime.ktx)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.activity.compose)
+
             implementation(libs.androidx.material3.v131)
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
             implementation(libs.ktor.client.android)
-            implementation(libs.jbcrypt)
+
 
 
         }
         commonMain.dependencies {
 
-
+            implementation(libs.ktor.client.cio.v236)
             implementation(projects.shared)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
@@ -60,7 +60,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-
+            
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -106,9 +106,6 @@ android {
 }
 
 dependencies {
-    implementation(project(":server"))
-    implementation(project(":server"))
-    implementation(project(":composeApp"))
     debugImplementation(compose.uiTooling)
 }
 

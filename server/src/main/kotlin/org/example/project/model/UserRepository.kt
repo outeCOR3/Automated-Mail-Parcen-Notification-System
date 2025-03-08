@@ -24,10 +24,9 @@ class UserRepository {
         result
     }
 
-
-
     fun getUserByEmail(email: String): Users? = transaction {
-        User.select ( User.email eq User.email )
+        User.selectAll()
+            .where { User.email eq email }
             .map { row ->
                 Users(
                     email = row[User.email],
@@ -37,6 +36,7 @@ class UserRepository {
             }
             .singleOrNull()
     }
+
 
     // Hash the password before storing it
     fun addUser(user: Users): Boolean = transaction {

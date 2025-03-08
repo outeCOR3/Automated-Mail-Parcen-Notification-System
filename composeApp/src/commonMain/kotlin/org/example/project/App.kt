@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,24 +39,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import org.example.project.network.UserApi
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.example.project.service.LoginService
 
 
-
-@Preview
 @Composable
-fun App(client: HttpClient, userApi: UserApi, userRepository: UserRepository) {
+fun App(client: HttpClient) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
     var loginResponse by remember { mutableStateOf<String?>(null) }
-
-    val loginManager = remember { LoginManager(userRepository) }
-
-
     val scope = rememberCoroutineScope()
+    val loginService = LoginService(client)
 
     val customColorScheme = lightColorScheme(
         primary = Color(0xFF6200EE),
@@ -78,7 +71,6 @@ fun App(client: HttpClient, userApi: UserApi, userRepository: UserRepository) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Welcome Back!", fontSize = 24.sp, color = MaterialTheme.colorScheme.primary)
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 OutlinedTextField(
@@ -131,18 +123,13 @@ fun App(client: HttpClient, userApi: UserApi, userRepository: UserRepository) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                Button(
-                    onClick = {
-                        scope.launch {
-                            loginResponse = loginmanager(userApi, email, password)
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                ) {
-                    Text(text = "Log In", fontSize = 18.sp)
+                Button(onClick = {
+                    scope.launch {
+                        val result = loginService.login(email, password)
+                        loginResponse = if (result) "Login successful" else loginService.errorMessage
+                    }
+                }) {
+                    Text("Login")
                 }
 
                 loginResponse?.let {
@@ -153,4 +140,3 @@ fun App(client: HttpClient, userApi: UserApi, userRepository: UserRepository) {
         }
     }
 }
-
