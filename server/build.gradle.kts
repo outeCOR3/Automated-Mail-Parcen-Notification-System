@@ -13,7 +13,7 @@ application {
 
 dependencies {
     implementation(libs.jbcrypt)
-
+    implementation(libs.kotlinx.serialization.json.v163)
     implementation(libs.exposed.java.time.v0440)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -32,7 +32,7 @@ dependencies {
     implementation(libs.ktor.server.netty)
     testImplementation(libs.ktor.server.tests)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.kotlinx.serialization.json.v161)
+    implementation(libs.ktor.serialization.kotlinx.json.v238)
     implementation(libs.hikari)
 
     testImplementation(libs.kotlin.test.junit)

@@ -6,48 +6,62 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import org.example.project.model.LoginRequest
+import org.example.project.model.RegisterRequest
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.security.JwtConfig
 import org.mindrot.jbcrypt.BCrypt
 
-// User registration and login routes
 fun Route.userRoutes(userRepository: UserRepository) {
-    // Register route
     post("/register") {
-        val userData = call.receive<Map<String, String>>()
-        val email = userData["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-        val password = userData["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+        try {
+            val userData = call.receive<RegisterRequest>()
 
-        // Check if user already exists
-        if (userRepository.getUserByEmail(email) != null) {
-            return@post call.respond(HttpStatusCode.Conflict)
+            if (!isValidEmail(userData.email)) {
+                return@post call.respond(HttpStatusCode.BadRequest, "Invalid email format")
+            }
+            if (userData.password.length < 8) {
+                return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Password must be at least 8 characters"
+                )
+            }
+
+            if (userRepository.getUserByEmail(userData.email) != null) {
+                return@post call.respond(HttpStatusCode.Conflict, "User already exists")
+            }
+
+            val hashedPassword = BCrypt.hashpw(userData.password, BCrypt.gensalt(12))
+
+            userRepository.addUser(Users(userData.email, hashedPassword, Roles.User))
+            call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
+        } catch (e: Exception) {
+            println("Registration error: ${e.stackTraceToString()}")
+            call.respond(HttpStatusCode.InternalServerError, "Server error during registration")
         }
-
-        // Hash the password before saving
-        val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt())
-
-        // Save user to repository
-        userRepository.addUser(Users(email, hashedPassword, Roles.User))
-        call.respond(HttpStatusCode.Created)
     }
 
-    // Login route
     post("/login") {
-        val credentials = call.receive<Map<String, String>>()
-        val email = credentials["email"] ?: return@post call.respond(HttpStatusCode.BadRequest)
-        val password = credentials["password"] ?: return@post call.respond(HttpStatusCode.BadRequest)
+        try {
+            val credentials = call.receive<LoginRequest>()
+            val user = userRepository.getUserByEmail(credentials.email)
 
-        // Retrieve user by email
-        val user = userRepository.getUserByEmail(email)
+            if (user == null || !BCrypt.checkpw(credentials.password, user.password)) {
+                return@post call.respond(HttpStatusCode.Unauthorized, "Invalid credentials")
+            }
 
-        // Verify password
-        if (user != null && BCrypt.checkpw(password, user.password)) {
-            val token = JwtConfig.generateToken(email)
-            call.respond(mapOf("token" to token))
-        } else {
-            call.respond(HttpStatusCode.Unauthorized)
+            val token = JwtConfig.generateToken(user.email)
+            call.respond(mapOf("token" to token, "role" to user.roles.name))
+        } catch (e: Exception) {
+            println("Login error: ${e.stackTraceToString()}")
+            call.respond(HttpStatusCode.BadRequest, "Invalid request: ${e.message}")
         }
     }
+}
+
+private fun isValidEmail(email: String): Boolean {
+    val emailRegex = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+    return email.matches(Regex(emailRegex))
 }
