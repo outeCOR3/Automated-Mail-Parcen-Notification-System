@@ -16,6 +16,7 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
@@ -28,7 +29,10 @@ fun main() {
 
 fun Application.module() {
     install(ContentNegotiation) {
-        json()
+        json(Json {
+            prettyPrint = true
+            isLenient = true
+        })
     }
 
     DatabaseFactory.init()
@@ -39,18 +43,20 @@ fun Application.module() {
             call.respondText("Hello, Ktor with PostgreSQL!")
         }
 
-        // Authentication routes
         route("/auth") {
-            userRoutes(userRepository)  // Handles /auth/register and /auth/login
+            userRoutes(userRepository)
         }
 
-        // User management routes
         route("/users") {
             get {
                 try {
-                    call.respond(HttpStatusCode.OK, userRepository.getAllUsers())
+                    val users = userRepository.getAllUsers()
+                    call.respond(users)
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError, "Failed to retrieve users")
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to "Failed to retrieve users: ${e.message}")
+                    )
                 }
             }
 
@@ -58,19 +64,22 @@ fun Application.module() {
                 val email = call.parameters["email"] ?: return@get call.respond(HttpStatusCode.BadRequest)
                 userRepository.getUserByEmail(email)?.let {
                     call.respond(it)
-                } ?: call.respond(HttpStatusCode.NotFound, "User not found")
+                } ?: call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
             }
 
             post {
                 try {
                     val user = call.receive<Users>()
                     if (userRepository.addUser(user)) {
-                        call.respond(HttpStatusCode.Created)
+                        call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
                     } else {
-                        call.respond(HttpStatusCode.Conflict)
+                        call.respond(HttpStatusCode.Conflict, mapOf("error" to "User already exists"))
                     }
                 } catch (e: Exception) {
-                    call.respond(HttpStatusCode.InternalServerError)
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to "Failed to create user: ${e.message}")
+                    )
                 }
             }
 
@@ -79,7 +88,7 @@ fun Application.module() {
                 if (userRepository.deleteUser(email)) {
                     call.respond(HttpStatusCode.NoContent)
                 } else {
-                    call.respond(HttpStatusCode.NotFound)
+                    call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
                 }
             }
         }

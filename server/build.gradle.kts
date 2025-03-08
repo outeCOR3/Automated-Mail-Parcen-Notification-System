@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation(libs.postgresql)
     implementation(projects.shared)
+    implementation(projects.composeApp)
     implementation(libs.logback)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)

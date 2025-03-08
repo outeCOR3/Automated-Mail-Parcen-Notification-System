@@ -49,8 +49,9 @@ kotlin {
 
         }
         commonMain.dependencies {
-            implementation (libs.jbcrypt)
+            implementation(libs.jbcrypt)
 
+            implementation(projects.shared)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.runtime)
@@ -58,7 +59,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            implementation(projects.shared)
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)

@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +51,9 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.launch
 
 import org.example.project.network.UserApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@Preview
 @Composable
 fun App(client: HttpClient, userApi: UserApi) {
     var email by remember { mutableStateOf("") }
@@ -158,11 +161,19 @@ fun App(client: HttpClient, userApi: UserApi) {
 
 // ✅ Correct Login Function Using UserApi
 suspend fun login(userApi: UserApi, email: String, password: String): String {
-    val user = userApi.getUserByEmail(email)
-    return if (user != null && BCrypt.checkpw(password, user.password)) {
+    val user = userApi.getUserByEmail(email.lowercase()) // Ensure case-insensitive lookup
+
+    if (user == null) {
+        println("DEBUG: User not found for email: $email")
+        return "Login failed: Invalid email or password"
+    }
+
+    println("DEBUG: Found user: ${user.email}, Stored Hashed Password: ${user.password}")
+
+    return if (BCrypt.checkpw(password, user.password)) {
         "Login successful!"
     } else {
+        println("DEBUG: Password mismatch")
         "Login failed: Invalid email or password"
     }
 }
-
