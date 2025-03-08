@@ -1,4 +1,5 @@
 package org.example.project.model
+import User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -23,9 +24,17 @@ class UserRepository {
         result
     }
 
+
+
     fun getUserByEmail(email: String): Users? = transaction {
-        User.select(User.email eq email)
-            .map(::resultRowToUser)
+        User.select ( User.email eq User.email )
+            .map { row ->
+                Users(
+                    email = row[User.email],
+                    password = row[User.passwordHash],
+                    roles = row[User.role]
+                )
+            }
             .singleOrNull()
     }
 

@@ -37,14 +37,13 @@ materialIconsExtended = "1.5.4"
 postgres = "42.7.5"
 compose-material3 = "1.7.1"
 compose = "1.7.1"
-
+krypto = "2.0.0"
 kotlinxSerialization = "1.5.0"
 compose_material_icons = "1.7.8"
 
 [libraries]
-
+krypto = { module = "com.soywiz.korlibs.krypto:krypto", version.ref = "krypto" }
 exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
-bcrypt = { module = "com.sksamuel.crypto:bcrypt", version = "1.0.0" }
 exposed-java-time-v0440 = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposedJavaTime" }
 hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsExtended" }

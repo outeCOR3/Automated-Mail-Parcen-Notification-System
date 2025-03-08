@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
-import org.mindrot.jbcrypt.BCrypt
-
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,25 +39,23 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import kotlinx.coroutines.launch
-
 import org.example.project.network.UserApi
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
+
+
 @Preview
 @Composable
-fun App(client: HttpClient, userApi: UserApi) {
+fun App(client: HttpClient, userApi: UserApi, userRepository: UserRepository) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
     var loginResponse by remember { mutableStateOf<String?>(null) }
+
+    val loginManager = remember { LoginManager(userRepository) }
+
 
     val scope = rememberCoroutineScope()
 
@@ -139,7 +134,7 @@ fun App(client: HttpClient, userApi: UserApi) {
                 Button(
                     onClick = {
                         scope.launch {
-                            loginResponse = login(userApi, email, password)
+                            loginResponse = loginmanager(userApi, email, password)
                         }
                     },
                     modifier = Modifier
@@ -159,21 +154,3 @@ fun App(client: HttpClient, userApi: UserApi) {
     }
 }
 
-// ✅ Correct Login Function Using UserApi
-suspend fun login(userApi: UserApi, email: String, password: String): String {
-    val user = userApi.getUserByEmail(email.lowercase()) // Ensure case-insensitive lookup
-
-    if (user == null) {
-        println("DEBUG: User not found for email: $email")
-        return "Login failed: Invalid email or password"
-    }
-
-    println("DEBUG: Found user: ${user.email}, Stored Hashed Password: ${user.password}")
-
-    return if (BCrypt.checkpw(password, user.password)) {
-        "Login successful!"
-    } else {
-        println("DEBUG: Password mismatch")
-        "Login failed: Invalid email or password"
-    }
-}

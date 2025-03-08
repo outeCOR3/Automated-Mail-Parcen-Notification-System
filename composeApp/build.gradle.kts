@@ -34,6 +34,7 @@ kotlin {
         val desktopMain by getting
         
         androidMain.dependencies {
+
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -44,12 +45,12 @@ kotlin {
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
             implementation(libs.ktor.client.android)
-            
+            implementation(libs.jbcrypt)
 
 
         }
         commonMain.dependencies {
-            implementation(libs.jbcrypt)
+
 
             implementation(projects.shared)
             implementation(compose.material3)
@@ -67,9 +68,11 @@ kotlin {
 
 
         desktopMain.dependencies {
+
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.cio)
+
 
         }
     }
@@ -103,6 +106,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":server"))
+    implementation(project(":server"))
+    implementation(project(":composeApp"))
     debugImplementation(compose.uiTooling)
 }
 
