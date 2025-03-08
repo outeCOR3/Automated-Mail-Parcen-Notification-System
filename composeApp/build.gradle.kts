@@ -44,10 +44,13 @@ kotlin {
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
             implementation(libs.ktor.client.android)
+            
 
 
         }
         commonMain.dependencies {
+            implementation (libs.jbcrypt)
+
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
             implementation(compose.runtime)

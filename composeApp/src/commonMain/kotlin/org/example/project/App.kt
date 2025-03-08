@@ -1,10 +1,37 @@
 package org.example.project
 
-import androidx.compose.material3.*
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import org.mindrot.jbcrypt.BCrypt
+
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,18 +40,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.HttpClient
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
 import kotlinx.coroutines.launch
 
+import org.example.project.network.UserApi
+
 @Composable
-fun App(client: HttpClient) {
+fun App(client: HttpClient, userApi: UserApi) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -108,7 +136,7 @@ fun App(client: HttpClient) {
                 Button(
                     onClick = {
                         scope.launch {
-                            loginResponse = login(client, email, password)
+                            loginResponse = login(userApi, email, password)
                         }
                     },
                     modifier = Modifier
@@ -128,14 +156,13 @@ fun App(client: HttpClient) {
     }
 }
 
-// ✅ Correct Login Function
-suspend fun login(client: HttpClient, email: String, password: String): String {
-    return try {
-        val response: HttpResponse = client.get("http://192.168.8.132:8080/users") {
-       // ✅ Ensure proper request body
-        }
-        response.body() // ✅ Get response body properly
-    } catch (e: Exception) {
-        "Login failed: ${e.message}" // ✅ Show error message
+// ✅ Correct Login Function Using UserApi
+suspend fun login(userApi: UserApi, email: String, password: String): String {
+    val user = userApi.getUserByEmail(email)
+    return if (user != null && BCrypt.checkpw(password, user.password)) {
+        "Login successful!"
+    } else {
+        "Login failed: Invalid email or password"
     }
 }
+

@@ -2,6 +2,7 @@ package org.example.project.model
 
 import kotlinx.serialization.Serializable
 
+
 @Serializable
 enum class Roles{
     Admin,User
@@ -12,3 +13,5 @@ data class Users(
     val password:String,
     val roles: Roles
 )
+
+

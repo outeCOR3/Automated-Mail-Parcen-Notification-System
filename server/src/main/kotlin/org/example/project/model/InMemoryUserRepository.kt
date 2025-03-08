@@ -1,12 +1,12 @@
-package org.example.project.model
+/*package org.example.project.model
 
 
 class InMemoryUserRepository: UserRepository {
 
         private var users = listOf(
             Users("admin@example.com", "securepass", Roles.Admin),
-            Users("user1@example.com", "password123", Roles.User),
-            Users("user2@example.com", "mypassword", Roles.User),
+            Users("user1@example.com", "password123", Roles.org.example.project.model.User),
+            Users("user2@example.com", "mypassword", Roles.org.example.project.model.User),
             Users("moderator@example.com", "modpass", Roles.Admin)
         )
 
@@ -43,3 +43,4 @@ class InMemoryUserRepository: UserRepository {
         }
     }
 
+*/

@@ -12,9 +12,12 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
+exposedJavaTime = "0.44.0"
+hikari = "5.0.1"
 
 androidxMaterial3 = "1.3.1"
 compose-multiplatform = "1.7.0"
+jbcrypt = "0.4"
 junit = "4.13.2"
 kotlin = "2.1.10"
 kotlinx-coroutines = "1.10.1"
@@ -22,6 +25,8 @@ kotlinxSerializationJson = "1.8.0"
 kotlinxSerializationJsonVersion = "1.6.1"
 ktor = "2.3.12"
 ktorClientAndroid = "2.3.12"
+ktorServerAuth = "2.3.0"
+ktorServerAuthJwt = "2.3.0"
 ktorServerCore = "2.3.12"
 lifecycleRuntimeKtx = "2.6.2"
 logback = "1.5.16"
@@ -37,6 +42,11 @@ kotlinxSerialization = "1.5.0"
 compose_material_icons = "1.7.8"
 
 [libraries]
+
+exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
+bcrypt = { module = "com.sksamuel.crypto:bcrypt", version = "1.0.0" }
+exposed-java-time-v0440 = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposedJavaTime" }
+hikari = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsExtended" }
 androidx-material-icons-extended-v154 = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
@@ -52,10 +62,13 @@ compose-animation = { group = "org.jetbrains.compose.animation", name = "animati
 exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
 exposed-dao = { module = "org.jetbrains.exposed:exposed-dao", version.ref = "exposed" }
 exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+jbcrypt = { module = "org.mindrot:jbcrypt", version.ref = "jbcrypt" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 kotlinx-serialization-json-v161 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJsonVersion" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktorServerCore" }
+ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktorServerAuth" }
+ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktorServerAuthJwt" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
@@ -83,7 +96,9 @@ ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "kto
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 
+
 [plugins]
+
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
