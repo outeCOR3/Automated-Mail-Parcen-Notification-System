@@ -15,7 +15,8 @@ class UserRepository {
             Users(
                 email = it[User.email],
                 password = it[User.passwordHash],
-                roles = Roles.valueOf(it[User.role])
+                roles = it[User.role] // Correct way
+
             )
         }
     }
@@ -26,7 +27,8 @@ class UserRepository {
                 Users(
                     email = it[User.email],
                     password = it[User.passwordHash],
-                    roles = Roles.valueOf(it[User.role])
+                    roles = it[User.role] // Correct way
+
                 )
             }
             .singleOrNull()
@@ -43,7 +45,7 @@ class UserRepository {
                 it[username] = user.email
                 it[email] = user.email
                 it[passwordHash] = hashedPassword
-                it[role] = user.roles.name
+                it[role] = user.roles
                 it[createdAt] = timestamp("created_at")
             }
             true
