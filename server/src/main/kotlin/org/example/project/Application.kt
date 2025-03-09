@@ -21,9 +21,10 @@ import org.example.project.database.DatabaseFactory
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.routes.userRoutes
+import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "192.168.68.173", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
         .start(wait = true)
 }
 
@@ -71,16 +72,14 @@ fun Application.module() {
             post {
                 try {
                     val user = call.receive<Users>()
-                    if (userRepository.addUser(user)) {
+                    val hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt(12))
+                    if (userRepository.addUser(Users(user.email, hashedPassword, user.roles))) {
                         call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
                     } else {
                         call.respond(HttpStatusCode.Conflict, mapOf("error" to "User already exists"))
                     }
                 } catch (e: Exception) {
-                    call.respond(
-                        HttpStatusCode.InternalServerError,
-                        mapOf("error" to "Failed to create user: ${e.message}")
-                    )
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create user: ${e.message}"))
                 }
             }
 

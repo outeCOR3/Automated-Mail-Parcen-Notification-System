@@ -44,12 +44,11 @@ class UserRepository {
 
         println("addUser(${user.email}): Query: ${User.select ( User.email eq user.email )}")
         if (!result) {
-            val hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt())
             val currentTime = LocalDateTime.now().atZone(java.time.ZoneId.of("UTC")).toInstant()
             User.insert {
                 it[username] = user.email
                 it[email] = user.email
-                it[passwordHash] = hashedPassword
+                it[passwordHash] = user.password
                 it[role] = user.roles
                 it[createdAt] = currentTime
             }
