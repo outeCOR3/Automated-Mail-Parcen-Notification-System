@@ -21,9 +21,10 @@ import org.example.project.database.DatabaseFactory
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.routes.userRoutes
+import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "192.168.68.173", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
         .start(wait = true)
 }
 
