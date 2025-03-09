@@ -27,7 +27,12 @@ kotlin {
                 implementation(libs.ktor.server.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlinx.serialization.json)
-                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.serialization)
+                implementation(libs.ktor.client.core.v230)  // Ktor core
+                implementation(libs.ktor.client.cio.v230)   // Ktor CIO engine
+                implementation(libs.ktor.client.json)   // Ktor JSON serialization
+
+
 
 
             }
