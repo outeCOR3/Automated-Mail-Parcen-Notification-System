@@ -40,7 +40,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.ktx)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
-
+            implementation(libs.kotlinx.serialization.json.v150)
             implementation(libs.androidx.material3.v131)
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
@@ -60,7 +60,7 @@ kotlin {
             implementation(compose.material)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            
+
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.kotlinx.json)
@@ -106,6 +106,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.ui.geometry.android)
     debugImplementation(compose.uiTooling)
 }
 

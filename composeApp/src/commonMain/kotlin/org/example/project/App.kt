@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
-import org.example.project.screens.UserLandingPage
 import org.example.project.screens.AdminLandingPage
+import org.example.project.screens.UserLandingPage
 import org.example.project.service.LoginService
 
 
@@ -52,7 +52,9 @@ fun App(client: HttpClient) {
     var loginResponse by remember { mutableStateOf<String?>(null) }
     var loggedInRole by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
-    val loginService = remember { LoginService(client) } // Ensure service persists
+    val loginService = remember { LoginService(client) }
+
+    // Ensure service persists
 
     // Debugging Logs (Check Console)
     println("Current loggedInRole: $loggedInRole")
