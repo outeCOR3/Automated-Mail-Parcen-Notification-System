@@ -49,6 +49,7 @@ krypto = "2.0.0"
 kotlinxSerialization = "1.5.0"
 compose_material_icons = "1.7.8"
 uiGeometryAndroid = "1.7.8"
+animationCoreAndroid = "1.7.8"
 
 [libraries]
 kotlinx-serialization-json-v150 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrainsKotlinxSerializationJsonVersion" }
@@ -112,6 +113,7 @@ ktor-server-core = { module = "io.ktor:ktor-server-core-jvm", version.ref = "kto
 ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 androidx-ui-geometry-android = { group = "androidx.compose.ui", name = "ui-geometry-android", version.ref = "uiGeometryAndroid" }
+androidx-animation-core-android = { group = "androidx.compose.animation", name = "animation-core-android", version.ref = "animationCoreAndroid" }
 
 
 [plugins]
