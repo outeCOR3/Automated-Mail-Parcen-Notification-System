@@ -71,16 +71,14 @@ fun Application.module() {
             post {
                 try {
                     val user = call.receive<Users>()
-                    if (userRepository.addUser(user)) {
+                    val hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt(12))
+                    if (userRepository.addUser(Users(user.email, hashedPassword, user.roles))) {
                         call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
                     } else {
                         call.respond(HttpStatusCode.Conflict, mapOf("error" to "User already exists"))
                     }
                 } catch (e: Exception) {
-                    call.respond(
-                        HttpStatusCode.InternalServerError,
-                        mapOf("error" to "Failed to create user: ${e.message}")
-                    )
+                    call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create user: ${e.message}"))
                 }
             }
 
