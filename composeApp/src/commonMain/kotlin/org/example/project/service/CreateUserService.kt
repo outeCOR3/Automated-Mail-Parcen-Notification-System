@@ -1,4 +1,5 @@
 package org.example.project.service
+import kotlinx.serialization.encodeToString
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post

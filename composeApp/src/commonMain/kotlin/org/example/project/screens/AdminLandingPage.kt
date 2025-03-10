@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@Preview
 @Composable
 fun AdminLandingPage(
     username: String,
@@ -75,15 +77,15 @@ fun AdminLandingPage(
         val animationSpec = tween<Dp>(durationMillis = 400, easing = androidx.compose.animation.core.FastOutSlowInEasing)
 
         // Home icon animations
-        val homeIconSize by animateDpAsState(targetValue = if (isHomeIconClicked) 72.dp else 60.dp, animationSpec = animationSpec)
+        val homeIconSize by animateDpAsState(targetValue = if (isHomeIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
         val homeIconOffset by animateDpAsState(targetValue = if (isHomeIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
 
         // Lock icon animations
-        val lockIconSize by animateDpAsState(targetValue = if (isLockIconClicked) 72.dp else 60.dp, animationSpec = animationSpec)
+        val lockIconSize by animateDpAsState(targetValue = if (isLockIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
         val lockIconOffset by animateDpAsState(targetValue = if (isLockIconClicked) (-40).dp else(9).dp, animationSpec = animationSpec)
 
         // Notification icon animations
-        val notificationIconSize by animateDpAsState(targetValue = if (isNotificationIconClicked) 72.dp else 60.dp, animationSpec = animationSpec)
+        val notificationIconSize by animateDpAsState(targetValue = if (isNotificationIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
         val notificationIconOffset by animateDpAsState(targetValue = if (isNotificationIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
 
         Column(modifier = Modifier.fillMaxSize()) {
