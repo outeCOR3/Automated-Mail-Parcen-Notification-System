@@ -107,6 +107,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.ui.geometry.android)
+    implementation(libs.androidx.animation.core.android)
     debugImplementation(compose.uiTooling)
 }
 
