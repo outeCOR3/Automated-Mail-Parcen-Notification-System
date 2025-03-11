@@ -36,7 +36,10 @@ class UserRepository {
         User.selectAll()
             .where { User.username eq username }
             .map(::resultRowToUser)
+
+=======
             .singleOrNull()  // ✅ Move inside transaction block
+
     }
 
 
