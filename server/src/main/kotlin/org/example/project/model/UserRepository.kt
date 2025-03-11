@@ -36,8 +36,12 @@ class UserRepository {
         User.selectAll()
             .where { User.username eq username }
             .map(::resultRowToUser)
-            .singleOrNull()
+
+=======
+            .singleOrNull()  // ✅ Move inside transaction block
+
     }
+
 
     // Hash the password before storing it
     fun addUser(user: Users): Boolean = transaction {
@@ -66,3 +70,4 @@ class UserRepository {
         User.deleteWhere { User.email eq email } > 0
     }
 }
+
