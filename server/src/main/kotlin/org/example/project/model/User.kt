@@ -6,7 +6,7 @@ const val MAX_TEXT_LENGTH = 255
 
 object User : Table() {
     val id = integer("id").autoIncrement()
-    val username = text("username")
+    val username = varchar("username", 50).uniqueIndex()
     val email = text("email").uniqueIndex()
     val passwordHash = text("password_hash")
     val role = enumerationByName("role", MAX_TEXT_LENGTH, Roles::class)

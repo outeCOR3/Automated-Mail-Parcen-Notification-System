@@ -1,5 +1,4 @@
 package org.example.project.service
-import kotlinx.serialization.encodeToString
 
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
@@ -13,12 +12,11 @@ import org.example.project.model.RegisterUserRequest
 class CreateUserService(private val client: HttpClient) {
     var errorMessage: String? = null
 
-    suspend fun register(email: String, password: String): Boolean {
+    suspend fun register(email: String, password: String, username: String): Boolean {
         errorMessage = null
 
         return try {
-            val registerRequest = RegisterUserRequest(email, password)
-
+            val registerRequest = RegisterUserRequest(email, password,username )
             val response: HttpResponse = client.post("http://192.168.8.132:8080/auth/register") {
                 contentType(io.ktor.http.ContentType.Application.Json)
                 setBody(Json.encodeToString(registerRequest))  // Ensure serialization works
@@ -27,7 +25,7 @@ class CreateUserService(private val client: HttpClient) {
             if (response.status == HttpStatusCode.Created) {
                 true
             } else {
-                errorMessage = "Registration failed: ${response.status}"
+                errorMessage = "Registration failed: Account is Already Existing"
                 false
             }
         } catch (e: Exception) {

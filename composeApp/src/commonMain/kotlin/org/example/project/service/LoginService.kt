@@ -28,7 +28,7 @@ class LoginService(private val client: HttpClient) {
                 userRole = responseBody.role
                 true
             } else {
-                errorMessage = "Login failed: ${response.status}"
+                errorMessage = "Login failed: Wrong email or password"
                 false
             }
         } catch (e: Exception) {

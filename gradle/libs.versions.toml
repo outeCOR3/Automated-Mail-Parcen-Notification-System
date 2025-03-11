@@ -48,10 +48,16 @@ compose = "1.7.1"
 krypto = "2.0.0"
 kotlinxSerialization = "1.5.0"
 compose_material_icons = "1.7.8"
+ui = "1.7.8"
 uiGeometryAndroid = "1.7.8"
 animationCoreAndroid = "1.7.8"
+uiGraphicsAndroid = "1.7.8"
+foundationAndroid = "1.7.8"
+uiToolingPreview = "1.7.8"
 
 [libraries]
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 kotlinx-serialization-json-v150 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrainsKotlinxSerializationJsonVersion" }
 kotlinx-serialization-json-v163 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrainsKotlinxSerializationJson" }
 
@@ -86,6 +92,7 @@ ktor-ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "kt
 ktor-serialization-kotlinx-json-v238 = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 ktor-server-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktorServerAuth" }
 ktor-server-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktorServerAuthJwt" }
+material = { module = "androidx.compose.material:material", version.ref = "materialIconsExtended" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
 
@@ -114,6 +121,8 @@ ktor-server-netty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "k
 ktor-server-tests = { module = "io.ktor:ktor-server-tests-jvm", version.ref = "ktor" }
 androidx-ui-geometry-android = { group = "androidx.compose.ui", name = "ui-geometry-android", version.ref = "uiGeometryAndroid" }
 androidx-animation-core-android = { group = "androidx.compose.animation", name = "animation-core-android", version.ref = "animationCoreAndroid" }
+androidx-ui-graphics-android = { group = "androidx.compose.ui", name = "ui-graphics-android", version.ref = "uiGraphicsAndroid" }
+androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 
 
 [plugins]
