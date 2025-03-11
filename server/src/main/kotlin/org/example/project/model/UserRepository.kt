@@ -6,7 +6,6 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime
 
 
@@ -36,8 +35,6 @@ class UserRepository {
         User.selectAll()
             .where { User.username eq username }
             .map(::resultRowToUser)
-
-=======
             .singleOrNull()  // ✅ Move inside transaction block
 
     }
@@ -53,7 +50,7 @@ class UserRepository {
             User.insert {
                 it[username] = user.username  // Store username separately
                 it[email] = user.email
-                it[passwordHash] = BCrypt.hashpw(user.password, BCrypt.gensalt()) // Hash password
+                it[passwordHash] = user.password // Hash password
                 it[role] = user.roles
                 it[createdAt] = currentTime
             }
