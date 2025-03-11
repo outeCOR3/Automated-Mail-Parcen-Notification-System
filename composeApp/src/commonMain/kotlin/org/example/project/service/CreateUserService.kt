@@ -16,7 +16,7 @@ class CreateUserService(private val client: HttpClient) {
         errorMessage = null
 
         return try {
-            val registerRequest = RegisterUserRequest(email, password,email )
+            val registerRequest = RegisterUserRequest(email, password,username )
             val response: HttpResponse = client.post("http://192.168.8.132:8080/auth/register") {
                 contentType(io.ktor.http.ContentType.Application.Json)
                 setBody(Json.encodeToString(registerRequest))  // Ensure serialization works

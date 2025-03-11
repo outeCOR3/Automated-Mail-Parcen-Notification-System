@@ -28,26 +28,13 @@ class UserRepository {
     fun getUserByEmail(email: String): Users? = transaction {
         User.selectAll()
             .where { User.email eq email }
-            .map { row ->
-                Users(
-                    email = row[User.email],
-                    password = row[User.passwordHash],
-                    roles = row[User.role],
-                    username = row[User.username]
-                )
-            }
+            .map(::resultRowToUser)
             .singleOrNull()
     }
     fun getUserByUsername(username: String): Users? = transaction {
         User.selectAll()
             .where { User.username eq username }
-            .map { row ->
-                Users(
-                    username = row[User.username],
-                    email = row[User.email],
-                    password = row[User.passwordHash],
-                    roles = row[User.role]
-                )
+            .map(::resultRowToUser)
             }
             .singleOrNull()
     }
@@ -78,4 +65,4 @@ class UserRepository {
     fun deleteUser(email: String): Boolean = transaction {
         User.deleteWhere { User.email eq email } > 0
     }
-}
+
