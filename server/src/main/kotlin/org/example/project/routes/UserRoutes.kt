@@ -7,7 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import org.example.project.model.LoginRequest
-import org.example.project.model.RegisterRequest
+import org.example.project.model.RegisterUserRequest
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
@@ -17,31 +17,47 @@ import org.mindrot.jbcrypt.BCrypt
 fun Route.userRoutes(userRepository: UserRepository) {
     post("/register") {
         try {
-            val userData = call.receive<RegisterRequest>()
+            val userData = call.receive<RegisterUserRequest>()
 
+            // Validate email format
             if (!isValidEmail(userData.email)) {
                 return@post call.respond(HttpStatusCode.BadRequest, "Invalid email format")
             }
+
+            // Ensure password length is at least 8 characters
             if (userData.password.length < 8) {
-                return@post call.respond(
-                    HttpStatusCode.BadRequest,
-                    "Password must be at least 8 characters"
-                )
+                return@post call.respond(HttpStatusCode.BadRequest, "Password must be at least 8 characters")
             }
 
+            // Ensure username is not empty
+            if (userData.username.isBlank()) {
+                return@post call.respond(HttpStatusCode.BadRequest, "Username cannot be empty")
+            }
+
+            // Check if email already exists
             if (userRepository.getUserByEmail(userData.email) != null) {
-                return@post call.respond(HttpStatusCode.Conflict, "User already exists")
+                return@post call.respond(HttpStatusCode.Conflict, "User with this email already exists")
             }
 
+            // Check if username already exists
+            if (userRepository.getUserByUsername(userData.username) != null) {
+                return@post call.respond(HttpStatusCode.Conflict, "Username is already taken")
+            }
+
+            // Hash password securely
             val hashedPassword = BCrypt.hashpw(userData.password, BCrypt.gensalt(12))
 
-            userRepository.addUser(Users(userData.email, hashedPassword, Roles.User))
+            // Save user with a separate username and email
+            userRepository.addUser(Users(userData.username, userData.email, hashedPassword, Roles.User))
+
             call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
         } catch (e: Exception) {
             println("Registration error: ${e.stackTraceToString()}")
             call.respond(HttpStatusCode.InternalServerError, "Server error during registration")
         }
     }
+
+
 
     post("/login") {
         try {

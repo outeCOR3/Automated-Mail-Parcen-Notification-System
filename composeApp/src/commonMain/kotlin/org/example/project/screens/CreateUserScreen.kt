@@ -35,13 +35,13 @@ import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import org.example.project.service.CreateUserService
 
-
 @Composable
 fun CreateUserScreen(
-    onCreateUser: (email: String, password: String) -> Unit,
+    onCreateUser: (username: String, email: String, password: String) -> Unit,
     onCancel: () -> Unit = {},
-    client: HttpClient // Add the client as a parameter for the service
+    client: HttpClient
 ) {
+    var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -49,7 +49,7 @@ fun CreateUserScreen(
     var errorMessage by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    val createUserService = remember { CreateUserService(client) } // Initialize CreateUserService
+    val createUserService = remember { CreateUserService(client) }
 
     Column(
         modifier = Modifier
@@ -60,6 +60,16 @@ fun CreateUserScreen(
         Text(text = "Create Account", fontSize = 24.sp, color = Color(0xFF78C2D1))
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Username Field
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Email Field
         OutlinedTextField(
@@ -132,20 +142,17 @@ fun CreateUserScreen(
 
             Button(
                 onClick = {
-                    if (password == confirmPassword && email.isNotBlank() && password.length >= 6) {
-                        // Call the registration API using CreateUserService
+                    if (username.isNotBlank() && email.isNotBlank() && password == confirmPassword && password.length >= 6) {
                         scope.launch {
-                            val result = createUserService.register(email, password)
+                            val result = createUserService.register(email, password,username)
                             if (result) {
-                                // Handle successful registration (e.g., show a success message or navigate)
-                                onCreateUser(email, password) // Proceed to next screen or function
+                                onCreateUser(email, password,username)
                             } else {
-                                // Show error message
                                 errorMessage = createUserService.errorMessage ?: "Unknown error"
                             }
                         }
                     } else {
-                        errorMessage = "Invalid input! Passwords must match & be at least 6 chars."
+                        errorMessage = "Invalid input! Username required, passwords must match & be at least 6 chars."
                     }
                 },
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF78C2D1))
@@ -155,4 +162,3 @@ fun CreateUserScreen(
         }
     }
 }
-

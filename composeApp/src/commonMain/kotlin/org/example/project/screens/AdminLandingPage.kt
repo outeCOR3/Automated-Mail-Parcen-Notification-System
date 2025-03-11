@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -34,14 +34,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@Preview
 @Composable
 fun AdminLandingPage(
     username: String,
@@ -58,35 +61,55 @@ fun AdminLandingPage(
     var isHomeIconClicked by remember { mutableStateOf(false) }
     var isLockIconClicked by remember { mutableStateOf(false) }
     var isNotificationIconClicked by remember { mutableStateOf(false) }
+
     val client = HttpClient()
 
     if (showCreateUser) {
         CreateUserScreen(
-            onCreateUser = { username, password ->
+            onCreateUser = { username, password, role ->
                 showCreateUser = false
-                // Handle user creation logic
+                // Handle user creation logic with role
             },
             onCancel = { showCreateUser = false },
             client = client
         )
-    } else {
-        val bottomBarHeight = 70.dp
-        val bottomBarShape = CutCornerShape(topStart = 24.dp, topEnd = 24.dp)
 
+    } else {
         // Animation configurations
-        val animationSpec = tween<Dp>(durationMillis = 400, easing = androidx.compose.animation.core.FastOutSlowInEasing)
+        val animationSpec = tween<Dp>(
+            durationMillis = 400,
+            easing = androidx.compose.animation.core.FastOutSlowInEasing
+        )
 
         // Home icon animations
-        val homeIconSize by animateDpAsState(targetValue = if (isHomeIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
-        val homeIconOffset by animateDpAsState(targetValue = if (isHomeIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
+        val homeIconSize by animateDpAsState(
+            targetValue = if (isHomeIconClicked) 90.dp else 80.dp,
+            animationSpec = animationSpec
+        )
+        val homeIconOffset by animateDpAsState(
+            targetValue = if (isHomeIconClicked) (-40).dp else (9).dp,
+            animationSpec = animationSpec
+        )
 
         // Lock icon animations
-        val lockIconSize by animateDpAsState(targetValue = if (isLockIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
-        val lockIconOffset by animateDpAsState(targetValue = if (isLockIconClicked) (-40).dp else(9).dp, animationSpec = animationSpec)
+        val lockIconSize by animateDpAsState(
+            targetValue = if (isLockIconClicked) 90.dp else 80.dp,
+            animationSpec = animationSpec
+        )
+        val lockIconOffset by animateDpAsState(
+            targetValue = if (isLockIconClicked) (-40).dp else (9).dp,
+            animationSpec = animationSpec
+        )
 
         // Notification icon animations
-        val notificationIconSize by animateDpAsState(targetValue = if (isNotificationIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
-        val notificationIconOffset by animateDpAsState(targetValue = if (isNotificationIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
+        val notificationIconSize by animateDpAsState(
+            targetValue = if (isNotificationIconClicked) 90.dp else 80.dp,
+            animationSpec = animationSpec
+        )
+        val notificationIconOffset by animateDpAsState(
+            targetValue = if (isNotificationIconClicked) (-40).dp else (9).dp,
+            animationSpec = animationSpec
+        )
 
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
@@ -128,11 +151,11 @@ fun AdminLandingPage(
 
             // Main screen content area
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Overlapping icons with animations outside the BottomAppBar
+                // Home icon with animation
                 Box(
                     modifier = Modifier
-                        .offset(y = homeIconOffset)  // Control home icon's vertical offset
-                        .align(Alignment.BottomStart)  // Align to the bottom left of the screen
+                        .offset(y = homeIconOffset)
+                        .align(Alignment.BottomStart)
                         .padding(start = 16.dp)
                 ) {
                     Box(
@@ -155,10 +178,11 @@ fun AdminLandingPage(
                     }
                 }
 
+                // Lock icon with animation
                 Box(
                     modifier = Modifier
-                        .offset(y = lockIconOffset)  // Control lock icon's vertical offset
-                        .align(Alignment.BottomCenter)  // Align to the bottom center of the screen
+                        .offset(y = lockIconOffset)
+                        .align(Alignment.BottomCenter)
                 ) {
                     Box(
                         modifier = Modifier
@@ -180,10 +204,11 @@ fun AdminLandingPage(
                     }
                 }
 
+                // Notification icon with animation
                 Box(
                     modifier = Modifier
-                        .offset(y = notificationIconOffset)  // Control notification icon's vertical offset
-                        .align(Alignment.BottomEnd)  // Align to the bottom right of the screen
+                        .offset(y = notificationIconOffset)
+                        .align(Alignment.BottomEnd)
                         .padding(end = 16.dp)
                 ) {
                     Box(
@@ -207,18 +232,49 @@ fun AdminLandingPage(
                 }
             }
 
-            // Bottom app bar without space between the app bar and icons
+            // Bottom app bar with curved cutout at the top
+            val cutoutRadius = 30.dp
+            val cutoutOffsetY = 20.dp
+
+            val density = LocalDensity.current
+            val cutoutRadiusPx = with(density) { cutoutRadius.toPx() }
+            val cutoutOffsetYPx = with(density) { cutoutOffsetY.toPx() }
+
             BottomAppBar(
                 backgroundColor = Color(0xFF78C2D1),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(bottomBarHeight) // Keep the height for the BottomAppBar
-                    .padding(0.dp), // No padding
+                    .height(70.dp)
+                    .graphicsLayer {
+                        shape = GenericShape { size: Size, layoutDirection: LayoutDirection ->
+                            // Bottom left corner
+                            moveTo(0f, 0f)
+                            lineTo(size.width / 2 - cutoutRadiusPx, 0f)
+
+                            // Cutout arc at the top
+                            arcTo(
+                                rect = Rect(
+                                    left = size.width / 2 - cutoutRadiusPx * 2,
+                                    top = -cutoutRadiusPx * 2,
+                                    right = size.width / 2 + cutoutRadiusPx * 2,
+                                    bottom = 0f
+                                ),
+                                startAngleDegrees = 0f,
+                                sweepAngleDegrees = -180f,
+                                forceMoveTo = false
+                            )
+
+                            // Bottom right corner
+                            lineTo(size.width, 0f)
+                            lineTo(size.width, size.height)
+                            lineTo(0f, size.height)
+                            close()
+                        }
+                        clip = true
+                    },
                 elevation = 12.dp
             ) {
-                // BottomAppBar items can be added here, but it's empty for now.
                 Spacer(modifier = Modifier.weight(1f))
-                // You can add more actions here like icons or buttons if needed.
             }
         }
     }

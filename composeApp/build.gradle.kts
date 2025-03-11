@@ -35,7 +35,9 @@ kotlin {
         
         androidMain.dependencies {
 
-
+            implementation (libs.androidx.ui)
+            implementation (libs.material)
+            implementation (libs.androidx.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.runtime.ktx)
             implementation(libs.androidx.lifecycle.runtime.compose)
@@ -50,7 +52,7 @@ kotlin {
 
         }
         commonMain.dependencies {
-
+            implementation("androidx.datastore:datastore-preferences:1.1.3")
             implementation(libs.ktor.client.cio.v236)
             implementation(projects.shared)
             implementation(compose.material3)
@@ -108,6 +110,8 @@ android {
 dependencies {
     implementation(libs.androidx.ui.geometry.android)
     implementation(libs.androidx.animation.core.android)
+    implementation(libs.androidx.ui.graphics.android)
+    implementation(libs.androidx.foundation.android)
     debugImplementation(compose.uiTooling)
 }
 

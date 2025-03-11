@@ -72,16 +72,31 @@ fun Application.module() {
             post {
                 try {
                     val user = call.receive<Users>()
+
+                    // Hash the password before storing
                     val hashedPassword = BCrypt.hashpw(user.password, BCrypt.gensalt(12))
-                    if (userRepository.addUser(Users(user.email, hashedPassword, user.roles))) {
+
+                    // Check if email already exists
+                    if (userRepository.getUserByEmail(user.email) != null) {
+                        return@post call.respond(HttpStatusCode.Conflict, mapOf("error" to "Email is already registered"))
+                    }
+
+                    // Check if username already exists
+                    if (userRepository.getUserByEmail(user.username) != null) {
+                        return@post call.respond(HttpStatusCode.Conflict, mapOf("error" to "Username is already taken"))
+                    }
+
+                    // Add user with separate username and email
+                    if (userRepository.addUser(Users(user.username, user.email, hashedPassword, user.roles))) {
                         call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
                     } else {
-                        call.respond(HttpStatusCode.Conflict, mapOf("error" to "User already exists"))
+                        call.respond(HttpStatusCode.Conflict, mapOf("error" to "Failed to create user"))
                     }
                 } catch (e: Exception) {
                     call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to create user: ${e.message}"))
                 }
             }
+
 
             delete("/{email}") {
                 val email = call.parameters["email"] ?: return@delete call.respond(HttpStatusCode.BadRequest)

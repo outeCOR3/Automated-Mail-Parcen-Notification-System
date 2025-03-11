@@ -10,6 +10,7 @@ enum class Roles{
 }
 @Serializable
 data class Users(
+    val username: String,
     val email: String,
     val password:String,
     val roles: Roles
@@ -17,7 +18,7 @@ data class Users(
 
 
 @Serializable
-data class RegisterRequest(val email: String, val password: String)
+data class RegisterRequest(val email: String, val password: String, val username: String )
 
 @Serializable
 data class LoginRequest(val email: String, val password: String)
@@ -28,7 +29,7 @@ data class LoginResponse(val token: String, val role: String)
 
 
 @Serializable
-data class RegisterUserRequest(val email: String, val password: String)
+data class RegisterUserRequest(val email: String, val password: String,val username: String)
 
 @Serializable
 data class RegisterUserResponse(val token: String, val role: String, val message:String)
