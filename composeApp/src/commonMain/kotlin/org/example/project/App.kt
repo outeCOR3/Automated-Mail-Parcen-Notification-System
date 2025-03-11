@@ -16,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -111,13 +110,14 @@ fun App(client: HttpClient) {
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        horizontalArrangement = Arrangement.Center
+                        /*horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically*/
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        /*Row(verticalAlignment = Alignment.CenterVertically) {
                             Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
                             Text(text = "Remember me")
-                        }
+                        }*/
 
                         Text(
                             text = "Forgot Password?",
