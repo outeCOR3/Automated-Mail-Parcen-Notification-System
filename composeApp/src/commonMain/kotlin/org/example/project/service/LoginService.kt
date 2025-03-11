@@ -13,8 +13,15 @@ import org.example.project.model.LoginResponse
 class LoginService(private val client: HttpClient) {
     var errorMessage: String? = null
     private var userRole: String? = null
+
     suspend fun login(email: String, password: String): Boolean {
         errorMessage = null
+
+        // Validation: Ensure email and password are not empty
+        if (email.isBlank() || password.isBlank()) {
+            errorMessage = "Email and password cannot be empty."
+            return false
+        }
 
         return try {
             val response: HttpResponse = client.post("http://192.168.8.132:8080/auth/login") {
@@ -36,13 +43,12 @@ class LoginService(private val client: HttpClient) {
             false
         }
     }
+
     fun getUserRole(): String? {
         return userRole
     }
-
 
     private fun saveToken(token: String) {
         // Save the token securely (e.g., DataStore, SharedPreferences)
     }
 }
-

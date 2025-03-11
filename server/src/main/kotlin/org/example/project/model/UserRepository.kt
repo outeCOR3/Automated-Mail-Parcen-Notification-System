@@ -31,11 +31,11 @@ class UserRepository {
             .map(::resultRowToUser)
             .singleOrNull()
     }
+
     fun getUserByUsername(username: String): Users? = transaction {
         User.selectAll()
             .where { User.username eq username }
             .map(::resultRowToUser)
-            }
             .singleOrNull()
     }
 
@@ -65,4 +65,4 @@ class UserRepository {
     fun deleteUser(email: String): Boolean = transaction {
         User.deleteWhere { User.email eq email } > 0
     }
-
+}

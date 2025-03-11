@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -137,12 +138,18 @@ fun App(client: HttpClient) {
                                 loginResponse = loginService.errorMessage
                             }
                         }
-                    }) {
+                    },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp), // Same height as OutlinedTextField
+                        shape = RoundedCornerShape(4.dp)
+                        ) {
                         Text("Login")
                     }
 
                     loginResponse?.let {
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier
+                            .height(12.dp))
                         Text(text = it, color = Color.Red)
                     }
                 }
