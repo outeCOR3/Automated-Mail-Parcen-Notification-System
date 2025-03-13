@@ -6,6 +6,8 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
+import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime
 
 
@@ -66,5 +68,17 @@ class UserRepository {
     fun deleteUser(email: String): Boolean = transaction {
         User.deleteWhere { User.email eq email } > 0
     }
-}
+
+    fun resetPassword(email: String, newPassword: String,confirmNewPassword:String): Boolean = transaction {
+        val hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(12))
+
+        val updatedRows = User.update({ User.email eq email }) {
+            it[passwordHash] = hashedPassword
+
+        }
+        updatedRows > 0
+        }
+    }
+      // Returns true if at least one row was updated
+
 

@@ -8,6 +8,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import org.example.project.model.LoginRequest
 import org.example.project.model.RegisterUserRequest
+import org.example.project.model.ResetPasswordRequest
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
@@ -26,7 +27,10 @@ fun Route.userRoutes(userRepository: UserRepository) {
 
             // Ensure password length is at least 8 characters
             if (userData.password.length < 8) {
-                return@post call.respond(HttpStatusCode.BadRequest, "Password must be at least 8 characters")
+                return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Password must be at least 8 characters"
+                )
             }
 
             // Ensure username is not empty
@@ -36,7 +40,10 @@ fun Route.userRoutes(userRepository: UserRepository) {
 
             // Check if email already exists
             if (userRepository.getUserByEmail(userData.email) != null) {
-                return@post call.respond(HttpStatusCode.Conflict, "User with this email already exists")
+                return@post call.respond(
+                    HttpStatusCode.Conflict,
+                    "User with this email already exists"
+                )
             }
 
             // Check if username already exists
@@ -52,7 +59,10 @@ fun Route.userRoutes(userRepository: UserRepository) {
             val isAdded = userRepository.addUser(user)
 
             if (isAdded) {
-                call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
+                call.respond(
+                    HttpStatusCode.Created,
+                    mapOf("message" to "User created successfully")
+                )
             } else {
                 call.respond(HttpStatusCode.InternalServerError, "User could not be created")
             }
@@ -99,9 +109,39 @@ fun Route.userRoutes(userRepository: UserRepository) {
             call.respond(HttpStatusCode.BadRequest, "Login failed: ${e.message}")
         }
     }
-}
+    post("/reset-password") {
+        try {
+            val resetRequest = call.receive<ResetPasswordRequest>()
 
-private fun isValidEmail(email: String): Boolean {
+            // Validate new password length
+            if (resetRequest.newPassword.length < 8) {
+                return@post call.respond(
+                    HttpStatusCode.BadRequest,
+                    "Password must be at least 8 characters"
+                )
+            }
+
+            // Ensure passwords match
+            if (resetRequest.newPassword != resetRequest.confirmNewPassword) {
+                return@post call.respond(HttpStatusCode.BadRequest, "Passwords do not match")
+            }
+
+
+            val isReset = userRepository.resetPassword(resetRequest.email, resetRequest.newPassword,resetRequest.confirmNewPassword)
+
+            if (isReset) {
+                call.respond(HttpStatusCode.OK, "Password reset successfully")
+            } else {
+                call.respond(HttpStatusCode.NotFound, "User not found")
+            }
+        } catch (e: Exception) {
+            println("Password reset error: ${e.stackTraceToString()}")
+            call.respond(HttpStatusCode.InternalServerError, "Error resetting password")
+        }
+    }
+
+}
+    private fun isValidEmail(email: String): Boolean {
     val emailRegex = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
     return email.matches(Regex(emailRegex))
 }
