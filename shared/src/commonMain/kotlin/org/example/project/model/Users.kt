@@ -33,3 +33,6 @@ data class RegisterUserRequest(val email: String, val password: String,val usern
 
 @Serializable
 data class RegisterUserResponse(val token: String, val role: String, val message:String)
+
+@Serializable
+data class ResetPasswordRequest(val email: String, val newPassword: String, val confirmNewPassword: String)

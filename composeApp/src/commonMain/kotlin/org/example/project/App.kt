@@ -1,10 +1,8 @@
 package org.example.project
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,118 +37,109 @@ import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.launch
 import org.example.project.screens.AdminLandingPage
+import org.example.project.screens.ForgotPasswordScreen
 import org.example.project.screens.UserLandingPage
 import org.example.project.service.LoginService
 
-
 @Composable
 fun App(client: HttpClient) {
+    var screenState by remember { mutableStateOf("Login") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var rememberMe by remember { mutableStateOf(false) }
     var loginResponse by remember { mutableStateOf<String?>(null) }
     var loggedInRole by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
     val loginService = remember { LoginService(client) }
 
-    // Ensure service persists
-
-    // Debugging Logs (Check Console)
-    println("Current loggedInRole: $loggedInRole")
-
-    if (loggedInRole == "User") {
-        UserLandingPage(email)
-    } else if (loggedInRole == "Admin") {
-        AdminLandingPage(email)
-    } else {
-        MaterialTheme {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .widthIn(min = 280.dp, max = 400.dp)
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+    when {
+        loggedInRole == "User" -> UserLandingPage(email)
+        loggedInRole == "Admin" -> AdminLandingPage(email)
+        screenState == "ForgotPassword" -> ForgotPasswordScreen(
+            onBackToLogin = { screenState = "Login" },
+            onPasswordReset = { screenState = "Login" },
+            client = client
+        )
+        else -> {
+            MaterialTheme {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(text = "Welcome Back!", fontSize = 24.sp)
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = { Text("Password") },
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                                    contentDescription = "Toggle password visibility"
-                                )
-                            }
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                        /*horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically*/
+                    Column(
+                        modifier = Modifier
+                            .widthIn(min = 280.dp, max = 400.dp)
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        /*Row(verticalAlignment = Alignment.CenterVertically) {
-                            Checkbox(checked = rememberMe, onCheckedChange = { rememberMe = it })
-                            Text(text = "Remember me")
-                        }*/
+                        Text(text = "Welcome Back!", fontSize = 24.sp)
+                        Spacer(modifier = Modifier.height(24.dp))
 
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Email") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = { Text("Password") },
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                        contentDescription = "Toggle password visibility"
+                                    )
+                                }
+                            },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Redirects to ForgotPasswordScreen
                         Text(
                             text = "Forgot Password?",
-                            modifier = Modifier.clickable { /* Handle forgot password */ }
+                            color = Color.Blue,
+                            modifier = Modifier
+                                .clickable { screenState = "ForgotPassword" }
+                                .padding(8.dp)
                         )
-                    }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
 
-                    Button(onClick = {
-                        scope.launch {
-                            val result = loginService.login(email, password)
-                            if (result) {
-                                loggedInRole = loginService.getUserRole()
-                                println("Login successful, role: $loggedInRole") // Debug log
-                            } else {
-                                loginResponse = loginService.errorMessage
-                            }
-                        }
-                    },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp), // Same height as OutlinedTextField
-                        shape = RoundedCornerShape(4.dp)
+                        Button(
+                            onClick = {
+                                scope.launch {
+                                    val result = loginService.login(email, password)
+                                    if (result) {
+                                        loggedInRole = loginService.getUserRole()
+                                    } else {
+                                        loginResponse = loginService.errorMessage
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(4.dp)
                         ) {
-                        Text("Login")
-                    }
+                            Text("Login")
+                        }
 
-                    loginResponse?.let {
-                        Spacer(modifier = Modifier
-                            .height(12.dp))
-                        Text(text = it, color = Color.Red)
+                        loginResponse?.let {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(text = it, color = Color.Red)
+                        }
                     }
                 }
             }
