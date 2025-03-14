@@ -69,9 +69,24 @@ fun Application.module() {
                 } ?: call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
             }
 
-            get("/role/user") {
+            get("/role/{role}") {
                 try {
-                    val users = userRepository.getUser()
+                    val role = call.parameters["role"] ?: return@get call.respond(HttpStatusCode.BadRequest, 
+                        mapOf("error" to "Role parameter is required"))
+
+                    val roleEnum = try {
+                        Roles.valueOf(role)
+                    } catch (e: IllegalArgumentException) {
+                        return@get call.respond(HttpStatusCode.BadRequest, 
+                            mapOf("error" to "Invalid role. Valid roles are: ${Roles.values().joinToString()}"))
+                    }
+
+                    val users = transaction {
+                        User.selectAll()
+                            .where { User.role eq roleEnum }
+                            .map { userRepository.resultRowToUser(it) }
+                    }
+                    
                     call.respond(users)
                 } catch (e: Exception) {
                     call.respond(
