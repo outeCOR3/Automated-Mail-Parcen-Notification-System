@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 
 
 class UserRepository {
-    private fun resultRowToUser(row: ResultRow): Users = Users(
+    fun resultRowToUser(row: ResultRow): Users = Users(
         email = row[User.email],
         password = row[User.passwordHash],
         roles = row[User.role],
@@ -23,6 +23,13 @@ class UserRepository {
         println("Fetching all users...")
         val result = User.selectAll().map(::resultRowToUser)
         println("Fetched ${result.size} users")
+        result
+    }
+
+    fun getUsersByRole(role: Roles): List<Users> = transaction {
+        println("Fetching users with role $role...")
+        val result = User.selectAll().where { User.role eq role }.map(::resultRowToUser)
+        println("Fetched ${result.size} users with role $role")
         result
     }
 
