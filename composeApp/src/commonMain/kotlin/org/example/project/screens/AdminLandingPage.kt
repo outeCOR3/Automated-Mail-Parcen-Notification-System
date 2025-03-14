@@ -4,34 +4,13 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material.BottomAppBar
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -42,7 +21,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 
 @Composable
@@ -73,7 +51,6 @@ fun AdminLandingPage(
             onCancel = { showCreateUser = false },
             client = client
         )
-
     } else {
         // Animation configurations
         val animationSpec = tween<Dp>(
@@ -145,13 +122,15 @@ fun AdminLandingPage(
                 }
             )
 
-            Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Hello, Admin, $username!", fontSize = 24.sp)
-            }
+            // Show UserListScreen directly
+            UserListScreen(
+                onBackPressed = { /* No back navigation needed */ },
+                client = client
+            )
 
-            // Main screen content area
+            // Bottom navigation bar
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Home icon with animation
+                // Home icon
                 Box(
                     modifier = Modifier
                         .offset(y = homeIconOffset)
@@ -178,7 +157,7 @@ fun AdminLandingPage(
                     }
                 }
 
-                // Lock icon with animation
+                // Lock icon
                 Box(
                     modifier = Modifier
                         .offset(y = lockIconOffset)
@@ -204,7 +183,7 @@ fun AdminLandingPage(
                     }
                 }
 
-                // Notification icon with animation
+                // Notification icon
                 Box(
                     modifier = Modifier
                         .offset(y = notificationIconOffset)
@@ -232,7 +211,7 @@ fun AdminLandingPage(
                 }
             }
 
-            // Bottom app bar with curved cutout at the top
+            // Bottom app bar
             val cutoutRadius = 30.dp
             val cutoutOffsetY = 20.dp
 
@@ -247,11 +226,8 @@ fun AdminLandingPage(
                     .height(70.dp)
                     .graphicsLayer {
                         shape = GenericShape { size: Size, layoutDirection: LayoutDirection ->
-                            // Bottom left corner
                             moveTo(0f, 0f)
                             lineTo(size.width / 2 - cutoutRadiusPx, 0f)
-
-                            // Cutout arc at the top
                             arcTo(
                                 rect = Rect(
                                     left = size.width / 2 - cutoutRadiusPx * 2,
@@ -263,8 +239,6 @@ fun AdminLandingPage(
                                 sweepAngleDegrees = -180f,
                                 forceMoveTo = false
                             )
-
-                            // Bottom right corner
                             lineTo(size.width, 0f)
                             lineTo(size.width, size.height)
                             lineTo(0f, size.height)
