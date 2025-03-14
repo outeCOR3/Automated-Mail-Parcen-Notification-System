@@ -1,16 +1,38 @@
 package org.example.project.screens
 
+import UserListScreen
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material.*
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -30,7 +52,7 @@ fun AdminLandingPage(
     onNavigateToLock: () -> Unit = {},
     onNavigateToNotifications: () -> Unit = {},
     onCreateUser: () -> Unit = {},
-    onLogout: () -> Unit = {}
+    onBackToLogin: () -> Unit = {}
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     var showCreateUser by remember { mutableStateOf(false) }
@@ -113,7 +135,7 @@ fun AdminLandingPage(
                             }
                             DropdownMenuItem(onClick = {
                                 menuExpanded = false
-                                onLogout()
+                                onBackToLogin()
                             }) {
                                 Text("Logout")
                             }
@@ -124,7 +146,7 @@ fun AdminLandingPage(
 
             // Show UserListScreen directly
             UserListScreen(
-                onBackPressed = { /* No back navigation needed */ },
+
                 client = client
             )
 

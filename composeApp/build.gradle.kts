@@ -7,6 +7,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+
+
 }
 
 kotlin {
@@ -34,7 +36,7 @@ kotlin {
         val desktopMain by getting
         
         androidMain.dependencies {
-
+            implementation(libs.firebase.bom.v3001)
             implementation (libs.androidx.ui)
             implementation (libs.material)
             implementation (libs.androidx.ui.tooling.preview)
@@ -52,7 +54,8 @@ kotlin {
 
         }
         commonMain.dependencies {
-            implementation("androidx.datastore:datastore-preferences:1.1.3")
+             // This line to add the firebase bom
+            implementation(project(":shared"))
             implementation(libs.ktor.client.cio.v236)
             implementation(projects.shared)
             implementation(compose.material3)
@@ -76,6 +79,9 @@ kotlin {
             implementation(libs.ktor.client.cio)
 
 
+        }
+        dependencies {
+            implementation(libs.firebase.common.ktx)
         }
     }
 }

@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.serialization)
+
 }
 
 kotlin {
@@ -23,6 +24,12 @@ kotlin {
 
     sourceSets {
             commonMain.dependencies {
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+
+                implementation("dev.gitlive:firebase-firestore:1.9.0")
+
+                implementation(libs.gitlive.firebase.common)// This line
+                implementation(libs.kotlinx.serialization.json.v151) // This line
                 implementation(libs.kotlinx.serialization.json.v161)
                 implementation(libs.ktor.server.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)

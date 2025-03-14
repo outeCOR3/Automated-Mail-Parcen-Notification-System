@@ -13,6 +13,11 @@ androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 exposedJavaTime = "0.44.0"
+firebaseBom = "33.10.0"
+firebaseBomVersion = "33.10.0"
+firebaseCommon = "1.9.0"
+firebaseCommonKtx = "21.0.0"
+firebaseFirestore = "1.9.0"
 hikari = "5.0.1"
 
 androidxMaterial3 = "1.3.1"
@@ -42,6 +47,7 @@ exposed = "0.59.0"
 material3 = "1.6.0"
 material3Version = "1.2.0"
 materialIconsExtended = "1.5.4"
+orgJetbrainsKotlinxKotlinxSerializationJson = "1.5.1"
 postgres = "42.7.5"
 compose-material3 = "1.7.1"
 compose = "1.7.1"
@@ -55,10 +61,22 @@ uiGraphicsAndroid = "1.7.8"
 foundationAndroid = "1.7.8"
 uiToolingPreview = "1.7.8"
 
+
 [libraries]
+
+
+
+
+
 androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-bom-v3001 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+firebase-common-ktx = { module = "com.google.firebase:firebase-common-ktx", version.ref = "firebaseCommonKtx" }
+firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "firebaseFirestore" }
+gitlive-firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "firebaseCommon" }
 kotlinx-serialization-json-v150 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrainsKotlinxSerializationJsonVersion" }
+kotlinx-serialization-json-v151 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "orgJetbrainsKotlinxKotlinxSerializationJson" }
 kotlinx-serialization-json-v163 = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jetbrainsKotlinxSerializationJson" }
 
 exposed-java-time = { module = "org.jetbrains.exposed:exposed-java-time", version.ref = "exposed" }
@@ -127,6 +145,7 @@ androidx-foundation-android = { group = "androidx.compose.foundation", name = "f
 
 [plugins]
 
+googleServices = { id = "com.google.gms.google-services", version = "4.3.14" }
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
