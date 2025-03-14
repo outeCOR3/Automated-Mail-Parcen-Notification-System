@@ -26,6 +26,13 @@ class UserRepository {
         result
     }
 
+    fun getUser(): List<Users> = transaction {
+        println("Fetching all users by role...")
+        val result = User.selectAll().where { User.role eq Roles.User }.map(::resultRowToUser)
+        println("Fetched ${result.size} users by role")
+        result
+    }
+
     fun getUserByEmail(email: String): Users? = transaction {
         User.selectAll()
             .where { User.email eq email }

@@ -69,6 +69,18 @@ fun Application.module() {
                 } ?: call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
             }
 
+            get("/role/user") {
+                try {
+                    val users = userRepository.getUser()
+                    call.respond(users)
+                } catch (e: Exception) {
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to "Failed to retrieve users by role: ${e.message}")
+                    )
+                }
+            }
+
             post {
                 try {
                     val user = call.receive<Users>()
