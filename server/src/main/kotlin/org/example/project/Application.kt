@@ -1,5 +1,6 @@
 package org.example.project
 
+import User
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
@@ -18,13 +19,16 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
+import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.routes.userRoutes
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "172.20.10.4", module = Application::module)
         .start(wait = true)
 }
 
@@ -78,7 +82,7 @@ fun Application.module() {
                         Roles.valueOf(role)
                     } catch (e: IllegalArgumentException) {
                         return@get call.respond(HttpStatusCode.BadRequest, 
-                            mapOf("error" to "Invalid role. Valid roles are: ${Roles.values().joinToString()}"))
+                            mapOf("error" to "Invalid role. Valid roles are: ${Roles.entries.joinToString()}"))
                     }
 
                     val users = transaction {

@@ -12,7 +12,7 @@ import java.time.LocalDateTime
 
 
 class UserRepository {
-    private fun resultRowToUser(row: ResultRow): Users = Users(
+    fun resultRowToUser(row: ResultRow): Users = Users(
         email = row[User.email],
         password = row[User.passwordHash],
         roles = row[User.role],
