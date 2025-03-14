@@ -36,3 +36,13 @@ data class RegisterUserResponse(val token: String, val role: String, val message
 
 @Serializable
 data class ResetPasswordRequest(val email: String, val newPassword: String, val confirmNewPassword: String)
+
+@Serializable
+data class UsersDTO(
+    val username: String,
+    val email: String,
+    val password: String,
+    val roles: String
+)
+@Serializable
+data class DropRequest(val sensorId: String, val value: Int)

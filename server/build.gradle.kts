@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
     application
+
+
 }
 
 group = "org.example.project"
@@ -12,6 +14,7 @@ application {
 }
 
 dependencies {
+
     implementation(libs.jbcrypt)
     implementation(libs.kotlinx.serialization.json.v163)
     implementation(libs.exposed.java.time.v0440)

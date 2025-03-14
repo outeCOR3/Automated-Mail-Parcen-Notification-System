@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "638731311876",
+    "project_id": "ampns-70274",
+    "storage_bucket": "ampns-70274.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:638731311876:android:4b3d136ef8623d7ffa8e51",
+        "android_client_info": {
+          "package_name": "com.itonaa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhC3Qf1fcy12LDm1ZRvQvTCWS9qjrBNz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

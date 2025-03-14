@@ -10,6 +10,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.delete
@@ -19,6 +20,7 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
+import org.example.project.model.DropRequest
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
@@ -52,8 +54,23 @@ fun Application.module() {
         route("/auth") {
             userRoutes(userRepository)
         }
+        post("/drop") {
+            val rawBody = call.receiveText()
+            println("Raw JSON received: $rawBody")
 
-        route("/users") {
+            try {
+                val requestBody = Json.decodeFromString<DropRequest>(rawBody)
+                println("Parsed drop request: $requestBody")
+                call.respond(HttpStatusCode.OK, "Drop request processed successfully!")
+            } catch (e: Exception) {
+                println("Error parsing request: ${e.message}")
+                call.respond(HttpStatusCode.BadRequest, "Invalid JSON format")
+            }
+        }
+
+
+
+    route("/users") {
             get {
                 try {
                     val users = userRepository.getAllUsers()

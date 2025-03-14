@@ -1,5 +1,6 @@
 package org.example.project.screens
 
+import UserListScreen
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -42,7 +43,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 
 @Composable
@@ -52,7 +52,7 @@ fun AdminLandingPage(
     onNavigateToLock: () -> Unit = {},
     onNavigateToNotifications: () -> Unit = {},
     onCreateUser: () -> Unit = {},
-    onLogout: () -> Unit = {}
+    onBackToLogin: () -> Unit = {}
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     var showCreateUser by remember { mutableStateOf(false) }
@@ -73,7 +73,6 @@ fun AdminLandingPage(
             onCancel = { showCreateUser = false },
             client = client
         )
-
     } else {
         // Animation configurations
         val animationSpec = tween<Dp>(
@@ -136,7 +135,7 @@ fun AdminLandingPage(
                             }
                             DropdownMenuItem(onClick = {
                                 menuExpanded = false
-                                onLogout()
+                                onBackToLogin()
                             }) {
                                 Text("Logout")
                             }
@@ -145,13 +144,15 @@ fun AdminLandingPage(
                 }
             )
 
-            Box(modifier = Modifier.weight(1f).fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Hello, Admin, $username!", fontSize = 24.sp)
-            }
+            // Show UserListScreen directly
+            UserListScreen(
 
-            // Main screen content area
+                client = client
+            )
+
+            // Bottom navigation bar
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Home icon with animation
+                // Home icon
                 Box(
                     modifier = Modifier
                         .offset(y = homeIconOffset)
@@ -178,7 +179,7 @@ fun AdminLandingPage(
                     }
                 }
 
-                // Lock icon with animation
+                // Lock icon
                 Box(
                     modifier = Modifier
                         .offset(y = lockIconOffset)
@@ -204,7 +205,7 @@ fun AdminLandingPage(
                     }
                 }
 
-                // Notification icon with animation
+                // Notification icon
                 Box(
                     modifier = Modifier
                         .offset(y = notificationIconOffset)
@@ -232,7 +233,7 @@ fun AdminLandingPage(
                 }
             }
 
-            // Bottom app bar with curved cutout at the top
+            // Bottom app bar
             val cutoutRadius = 30.dp
             val cutoutOffsetY = 20.dp
 
@@ -247,11 +248,8 @@ fun AdminLandingPage(
                     .height(70.dp)
                     .graphicsLayer {
                         shape = GenericShape { size: Size, layoutDirection: LayoutDirection ->
-                            // Bottom left corner
                             moveTo(0f, 0f)
                             lineTo(size.width / 2 - cutoutRadiusPx, 0f)
-
-                            // Cutout arc at the top
                             arcTo(
                                 rect = Rect(
                                     left = size.width / 2 - cutoutRadiusPx * 2,
@@ -263,8 +261,6 @@ fun AdminLandingPage(
                                 sweepAngleDegrees = -180f,
                                 forceMoveTo = false
                             )
-
-                            // Bottom right corner
                             lineTo(size.width, 0f)
                             lineTo(size.width, size.height)
                             lineTo(0f, size.height)
