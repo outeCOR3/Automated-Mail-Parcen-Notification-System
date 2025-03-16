@@ -29,7 +29,7 @@ data class LoginResponse(val token: String, val role: String)
 
 
 @Serializable
-data class RegisterUserRequest(val email: String, val password: String,val username: String)
+data class RegisterUserRequest(val email: String, val password: String,val username: String, val roles: Roles = Roles.User)
 
 @Serializable
 data class RegisterUserResponse(val token: String, val role: String, val message:String)
@@ -44,5 +44,4 @@ data class UsersDTO(
     val password: String,
     val roles: String
 )
-@Serializable
-data class DropRequest(val sensorId: String, val value: Int)
+

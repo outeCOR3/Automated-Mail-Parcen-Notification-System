@@ -10,7 +10,6 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
-import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondText
 import io.ktor.server.routing.delete
@@ -20,18 +19,18 @@ import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
-import org.example.project.model.DropRequest
+import org.example.project.model.LockerRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
+import org.example.project.routes.lockerRoutes
 import org.example.project.routes.userRoutes
-import org.example.project.utils.getLocalHostname
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = getLocalHostname(), module = Application::module)
+    embeddedServer(Netty, port = 8080, host = org.example.project.network.getLocalIpAddress(), module = Application::module)
         .start(wait = true)
 }
 
@@ -47,6 +46,7 @@ fun Application.module() {
 
     DatabaseFactory.init()
     val userRepository = UserRepository()
+    val lockerRepository = LockerRepository(userRepository)
 
     routing {
         get("/") {
@@ -56,17 +56,19 @@ fun Application.module() {
         route("/auth") {
             userRoutes(userRepository)
         }
-        post("/drop") {
-            val rawBody = call.receiveText()
-            println("Raw JSON received: $rawBody")
+        route("/drop") {
+            lockerRoutes(lockerRepository)
+            get {
+                try{
+                    val locker = lockerRepository.getAllLockers()
+                    call.respond(locker)
+                } catch (e: Exception){
+                    call.respond(
+                        HttpStatusCode.InternalServerError,
+                        mapOf("error" to "failed to retrieve lockers: ${e.message}")
+                    )
+                }
 
-            try {
-                val requestBody = Json.decodeFromString<DropRequest>(rawBody)
-                println("Parsed drop request: $requestBody")
-                call.respond(HttpStatusCode.OK, "Drop request processed successfully!")
-            } catch (e: Exception) {
-                println("Error parsing request: ${e.message}")
-                call.respond(HttpStatusCode.BadRequest, "Invalid JSON format")
             }
         }
 
