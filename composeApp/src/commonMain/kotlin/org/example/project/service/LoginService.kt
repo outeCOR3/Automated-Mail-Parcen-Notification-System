@@ -9,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import org.example.project.model.LoginRequest
 import org.example.project.model.LoginResponse
+import org.example.project.network.getLocalIpAddress
 
 class LoginService(private val client: HttpClient) {
     var errorMessage: String? = null
@@ -24,7 +25,8 @@ class LoginService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.post("http://172.20.10.4:8080/auth/login") {
+            val serverIp = getLocalIpAddress()
+            val response: HttpResponse = client.post("http://$serverIp:8080/auth/login") {
                 contentType(io.ktor.http.ContentType.Application.Json) // Explicitly set JSON content type
                 setBody(LoginRequest(email, password)) // Ensure serialization works
             }

@@ -5,20 +5,28 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-fun createHttpClient() = HttpClient(CIO)  {
-    install(ContentNegotiation) {
-        json(Json {
-            encodeDefaults = true
-            isLenient = true
-            coerceInputValues = true
-            ignoreUnknownKeys = true
-        })
-    }
-    defaultRequest {
-        host = "172.20.10.4"
-        port = 8080
+fun createHttpClient(): HttpClient {
+    val localIp = getLocalIpAddress() ?: "127.0.0.1" // Default to localhost if no IP is found
+
+    return HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(Json {
+                encodeDefaults = true
+                isLenient = true
+                coerceInputValues = true
+                ignoreUnknownKeys = true
+            })
+        }
+        defaultRequest {
+            url {
+                protocol = URLProtocol.HTTP
+                host = localIp
+                port = 8080
+            }
+        }
     }
 }

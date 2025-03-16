@@ -9,6 +9,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import org.example.project.model.ResetPasswordRequest
+import org.example.project.network.getLocalIpAddress
 
 
 class ForgotPasswordService(private val client: HttpClient) {
@@ -19,7 +20,8 @@ class ForgotPasswordService(private val client: HttpClient) {
 
         return try {
             val resetRequest = ResetPasswordRequest(email, newPassword,confirmNewPassword)
-            val response: HttpResponse = client.post("http://172.20.10.4:8080/auth/reset-password") {
+            val serverIp = getLocalIpAddress()  // Get the IP dynamically
+            val response: HttpResponse = client.post("http://$serverIp:8080/auth/reset-password") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(ResetPasswordRequest.serializer(), resetRequest))
             }

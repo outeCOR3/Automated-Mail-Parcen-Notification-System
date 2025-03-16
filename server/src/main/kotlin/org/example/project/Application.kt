@@ -25,14 +25,16 @@ import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.routes.userRoutes
+import org.example.project.utils.getLocalHostname
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "172.20.10.4", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = getLocalHostname(), module = Application::module)
         .start(wait = true)
 }
+
 
 fun Application.module() {
     install(ContentNegotiation) {

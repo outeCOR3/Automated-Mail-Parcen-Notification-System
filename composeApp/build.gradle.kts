@@ -19,7 +19,7 @@ kotlin {
         }
     }
     
-    listOf(
+   /* listOf(
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
@@ -28,7 +28,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
         }
-    }
+    }*/
     
     jvm("desktop")
     
@@ -36,6 +36,7 @@ kotlin {
         val desktopMain by getting
         
         androidMain.dependencies {
+            implementation(projects.server)
             implementation(libs.firebase.bom.v3001)
             implementation (libs.androidx.ui)
             implementation (libs.material)
