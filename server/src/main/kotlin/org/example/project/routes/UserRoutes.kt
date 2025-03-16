@@ -9,7 +9,6 @@ import io.ktor.server.routing.post
 import org.example.project.model.LoginRequest
 import org.example.project.model.RegisterUserRequest
 import org.example.project.model.ResetPasswordRequest
-import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
 import org.example.project.security.JwtConfig
@@ -54,8 +53,10 @@ fun Route.userRoutes(userRepository: UserRepository) {
             // Hash password securely
             val hashedPassword = BCrypt.hashpw(userData.password, BCrypt.gensalt(12))
 
+
             // Save user with a separate username and email
-            val user = Users(userData.username, userData.email, hashedPassword, Roles.User)
+            val role = userData.roles // Accepts User or Admin from the request
+            val user = Users(userData.username, userData.email, hashedPassword, role)
             val isAdded = userRepository.addUser(user)
 
             if (isAdded) {
