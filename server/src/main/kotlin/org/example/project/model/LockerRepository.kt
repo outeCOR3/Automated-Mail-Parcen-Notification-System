@@ -77,4 +77,17 @@ class LockerRepository(private val userRepository: UserRepository) {
         println("Updated locker with locker_id: $lockerId to new user ID: $newUserId")
         updatedRows > 0
     }
+
+    fun updateLockerLockState(lockerId: Int, isLocked: Boolean): Boolean = transaction {
+        val updatedRows = Locker.update({ Locker.locker_id eq lockerId }) {  // Use locker_id
+            it[Locker.isLocked] = isLocked
+        }
+        updatedRows > 0  // Return true if update was successful
+    }
+
+    fun getLockersByLockerId(lockerId: Int): List<Lockers> = transaction {
+        Locker.selectAll()
+            .where { Locker.locker_id eq lockerId }  // Ensure filtering by locker_id
+            .map(::resultRowToLocker)  // Convert ResultRow to Locker object
+    }
 }
