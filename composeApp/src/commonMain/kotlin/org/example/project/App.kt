@@ -54,7 +54,14 @@ fun App(client: HttpClient) {
 
     when {
         loggedInRole == "User" -> UserLandingPage(email)
-        loggedInRole == "Admin" -> AdminLandingPage(email)
+        loggedInRole == "Admin" -> AdminLandingPage(
+            username = email,
+            onBackToLogin = {
+                loggedInRole = ""  // Clear role
+                screenState = "Login"  // Reset to login state
+            }
+        )
+
         screenState == "ForgotPassword" -> ForgotPasswordScreen(
             onBackToLogin = { screenState = "Login" },
             onPasswordReset = { screenState = "Login" },
