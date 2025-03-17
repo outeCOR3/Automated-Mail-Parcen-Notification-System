@@ -22,35 +22,35 @@ class LockerRepository(private val userRepository: UserRepository) {
     fun getAllLockers(): List<Lockers> = transaction {
         println("Fetching all lockers with usernames from User table...")
         (Locker innerJoin User)
-            .select(Locker.id, User.username)
+            .select(Locker.id, User.id)
             .map(::resultRowToLocker)
     }
 
-    fun getLockersByUsername(username: String): List<Lockers> = transaction {
+    fun getLockersById(id: Int): List<Lockers> = transaction {
         (Locker innerJoin User)
-            .select(Locker.id, User.username)
-            .where { User.username eq username }
+            .select(Locker.id, User.id)
+            .where { User.id eq id }
             .map(::resultRowToLocker)
     }
 
-    fun addLocker(username: String): Boolean = transaction {
-        println("Checking if user with username $username exists...")
-        val user = userRepository.getUserByUsername(username) ?: return@transaction false
+    fun addLocker(id: Int): Boolean = transaction {
+        println("Checking if user with id: $id exists...")
+        val user = userRepository.getUserById(id) ?: return@transaction false
 
         val existingLocker =
-            Locker.select(Locker.username).where { Locker.username eq username }.singleOrNull()
+            Locker.select(Locker.user_id).where { Locker.user_id eq user_id }.singleOrNull()
         if (existingLocker != null) {
-            println("Locker already exists for user: $username")
+            println("Locker already exists for user: $id")
             return@transaction false
         }
 
         val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila"))
         Locker.insert {
-            it[Locker.username] = username
+            it[Locker.user_id] = user_id
             it[createdAt] = phTime.toInstant()
         }
 
-        println("Added locker for user: $username at $phTime (UTC+8)")
+        println("Added locker for user: $id at $phTime (UTC+8)")
         true
     }
 
@@ -61,32 +61,32 @@ class LockerRepository(private val userRepository: UserRepository) {
     // Ensure this method is returning a nullable User
 
 
-    fun updateLocker(id: Int, newEmail: String): Boolean = transaction {
+    fun updateLocker(id: Int, newUserId: Int): Boolean = transaction {
         // Fetch the user based on the new email provided
-        val user = userRepository.getUserByEmail(newEmail)
+        val user = userRepository.getUserById(newUserId)
 
         // Check if the user exists
         if (user != null) {
             // Extract the username from the found user
-            val newUsername = user.username
+            val newUserId = user.id
 
             // Check if the username is already assigned to another locker
-            val existingLocker = Locker.select(Locker.username)
-                .where ( Locker.username eq newUsername and (Locker.id neq id))
+            val existingLocker = Locker.select(Locker.user_id)
+                .where ( Locker.user_id eq newUserId and (Locker.id neq id))
                 .singleOrNull()
 
             if (existingLocker != null) {
-                println("Username $newUsername is already assigned to another locker.")
+                println("Username $newUserId is already assigned to another locker.")
                 return@transaction false
             }
 
             // Proceed with updating the locker with the new username
             val updatedRows = Locker.update({ Locker.id eq id }) {
-                it[username] = newUsername  // Set the new username from the user
+                it[id] = newUserId  // Set the new username from the user
             }
 
             // Log the successful update
-            println("Updated locker with ID: $id to new username: $newUsername (from email: $newEmail)")
+            println("Updated locker with ID: $id to new username: $newUserId (from email: $newUserId)")
 
             // Return true if the update was successful (i.e., at least one row was updated)
             return@transaction updatedRows > 0
