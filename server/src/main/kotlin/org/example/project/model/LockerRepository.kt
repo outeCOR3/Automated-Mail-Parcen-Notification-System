@@ -3,100 +3,78 @@ package org.example.project.model
 import User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.time.Instant
+import java.time.ZoneId
 
 class LockerRepository(private val userRepository: UserRepository) {
 
     private fun resultRowToLocker(row: ResultRow): Lockers = Lockers(
         id = row[Locker.id],
-        sensorId = row[Locker.sensorId],
-        username = row[Locker.username], // Fetching username from User table
-
+        userId = row[Locker.user_id],  // Changed to match Lockers class
+        lockerId = row[Locker.locker_id] // Changed to match Lockers class
     )
+
 
     fun getAllLockers(): List<Lockers> = transaction {
         println("Fetching all lockers with usernames from User table...")
-
         (Locker innerJoin User)
-            .select(Locker.id, Locker.sensorId, User.username) // ✅ Explicitly select username
-            .map { row ->
-                Lockers(
-                    id = row[Locker.id],
-                    sensorId = row[Locker.sensorId],
-                    username = row[User.username] // ✅ Correct reference
-                )
-            }
+            .selectAll()
+            .map(::resultRowToLocker)
     }
 
-    fun getLockerBySensorId(sensorId: String): Lockers? = transaction {
-        (Locker innerJoin User)
-            .select(Locker.id, Locker.sensorId, User.username) // ✅ Include username
-            .where { Locker.sensorId eq sensorId }
-            .map { row ->
-                Lockers(
-                    id = row[Locker.id],
-                    sensorId = row[Locker.sensorId],
-                    username = row[User.username] // ✅ Fetch username correctly
-                )
-            }
-            .singleOrNull()
+    fun getLockersById(id: Int): List<Lockers> = transaction {
+        Locker.selectAll() // Changed from Locker.select(Locker.id) to select all columns
+            .where { Locker.id eq id }
+            .map(::resultRowToLocker)
     }
 
-    fun getLockersByUsername(username: String): List<Lockers> = transaction {
-        (Locker innerJoin User)
-            .select(Locker.id, Locker.sensorId, User.username) // ✅ Include username
-            .where { User.username eq username }
-            .map { row ->
-                Lockers(
-                    id = row[Locker.id],
-                    sensorId = row[Locker.sensorId],
-                    username = row[User.username] // ✅ Fetch username correctly
-                )
-            }
-    }
+    fun addLocker(userId: Int): Boolean = transaction {
+        println("Checking if user with id: $userId exists...")
+        val user = userRepository.getUserById(userId) ?: return@transaction false
 
-
-    fun addLocker(sensorId: String, username: String): Boolean = transaction {
-        println("Checking if user with username $username exists...")
-
-        val user = userRepository.getUserByUsername(username) ?: return@transaction false
-
-        val currentTime = java.time.Instant.now()
-
-        Locker.insert {
-            it[Locker.sensorId] = sensorId
-            it[Locker.username] = username  // ✅ Use username directly
-            it[createdAt] = currentTime
+        val existingLocker =
+            Locker.select(Locker.id).where { Locker.user_id eq userId }.singleOrNull()
+        if (existingLocker != null) {
+            println("Locker already exists for user: $userId")
+            return@transaction false
         }
 
-        println("Added locker with sensor ID: $sensorId for user: $username at $currentTime (UTC)")
+        val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
+        Locker.insert {
+            it[user_id] = userId
+            it[createdAt] = phTime
+        }
+
+        println("Added locker for user: $userId at $phTime (UTC+8)")
         true
     }
 
-
-
-    fun deleteLocker(sensorId: String): Boolean = transaction {
-        Locker.deleteWhere { Locker.sensorId eq sensorId } > 0
+    fun deleteLocker(id: Int): Boolean = transaction {
+        Locker.deleteWhere { Locker.id eq id } > 0
     }
 
-    fun updateLocker(sensorId: String, newEmail: String): Boolean = transaction {
-        val user = userRepository.getUserByEmail(newEmail)
+    fun updateLocker(lockerId: Int, newUserId: Int): Boolean = transaction {
+        val user = userRepository.getUserById(newUserId) ?: return@transaction false
 
-        if (user != null) {
-            val newUsername = user.username
-
-            val updatedRows = Locker.update({ Locker.sensorId eq sensorId }) {
-                it[username] = newUsername // Update username based on User table
-            }
-
-            println("Updated locker with sensor ID: $sensorId to new username: $newUsername (from email: $newEmail)")
-            return@transaction updatedRows > 0
-        } else {
-            println("User with email $newEmail does not exist. Locker update failed.")
+        val existingLocker = Locker.select(Locker.locker_id)
+            .where { Locker.user_id eq newUserId and (Locker.locker_id neq lockerId) }
+            .singleOrNull()
+        if (existingLocker != null) {
+            println("User $newUserId is already assigned to another locker.")
             return@transaction false
         }
+
+        val updatedRows = Locker.update({ Locker.locker_id eq lockerId }) {
+            it[Locker.user_id] = newUserId
+        }
+
+        println("Updated locker with locker_id: $lockerId to new user ID: $newUserId")
+        updatedRows > 0
     }
 }

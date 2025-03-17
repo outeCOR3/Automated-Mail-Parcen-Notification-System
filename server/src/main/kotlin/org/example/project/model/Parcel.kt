@@ -1,14 +1,13 @@
 package org.example.project.model
 
-import User
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object Locker : Table() {
+object Parcel : Table() {
     val id = integer("id").autoIncrement()
-    val locker_id = integer("locker_id").uniqueIndex().autoIncrement()
-    val user_id = reference("user_id", User.id)
-    val createdAt = timestamp("created_at")
+    val trackingNumber = varchar("tracking_number", 255).uniqueIndex()
+    val deliveredAt = timestamp("delivered_at").nullable()
+    val imageUrl = varchar("image_url", 255).nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

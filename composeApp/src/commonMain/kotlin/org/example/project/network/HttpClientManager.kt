@@ -10,7 +10,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 fun createHttpClient(): HttpClient {
-    val localIp = getLocalIpAddress() ?: "127.0.0.1" // Default to localhost if no IP is found
+    /*val localIp = getLocalIpAddress() ?: "127.0.0.1" // Default to localhost if no IP is found*/
 
     return HttpClient(CIO) {
         install(ContentNegotiation) {
@@ -24,7 +24,7 @@ fun createHttpClient(): HttpClient {
         defaultRequest {
             url {
                 protocol = URLProtocol.HTTP
-                host = localIp
+                host = "192.168.68.197"
                 port = 8080
             }
         }

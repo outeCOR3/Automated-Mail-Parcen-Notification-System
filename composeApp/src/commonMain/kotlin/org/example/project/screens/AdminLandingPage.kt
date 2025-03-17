@@ -112,7 +112,7 @@ fun AdminLandingPage(
 
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
-                title = { Text(text = "LAND LORD", color = Color.White) },
+                title = { Text(text = "LANDLORD", color = Color.White) },
                 backgroundColor = Color(0xFF78C2D1),
                 actions = {
                     Box {

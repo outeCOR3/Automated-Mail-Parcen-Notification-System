@@ -3,72 +3,79 @@ package org.example.project.routes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
+import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
+import kotlinx.serialization.json.Json
 import org.example.project.model.LockerRepository
 import org.example.project.model.Lockers
 
 fun Route.lockerRoutes(lockerRepository: LockerRepository) {
 
     // Get all lockers
-    get("/lockers") {
+    get("/locker") {
         val lockers = lockerRepository.getAllLockers()
-        call.respond(lockers)
-    }
 
-    // Get locker by sensor ID
-    get("/lockers/{sensorId}") {
-        val sensorId = call.parameters["sensorId"]
-        if (sensorId == null) {
-            call.respond(HttpStatusCode.BadRequest, "Sensor ID is required")
-            return@get
-        }
+        println("✅ Retrieved lockers: $lockers") // Debugging output
 
-        val locker = lockerRepository.getLockerBySensorId(sensorId)
-        if (locker != null) {
-            call.respond(locker)
+        if (lockers.isNotEmpty()) {
+            call.respond(HttpStatusCode.OK, lockers)
         } else {
-            call.respond(HttpStatusCode.NotFound, "Locker not found")
+            call.respond(HttpStatusCode.NoContent, "No lockers found")
         }
     }
 
-    // Get lockers by username
-    get("/lockers/user/{username}") {
-        val username = call.parameters["username"]
-        if (username == null) {
-            call.respond(HttpStatusCode.BadRequest, "Username is required")
+    // Get lockers by user ID
+    get("/lockers/user/{userId}") {
+        val userId = call.parameters["userId"]?.toIntOrNull()
+        if (userId == null) {
+            call.respond(HttpStatusCode.BadRequest, "User ID is required")
             return@get
         }
 
-        val lockers = lockerRepository.getLockersByUsername(username)
-        call.respond(lockers)
+        val lockers = lockerRepository.getLockersById(userId)
+        if (lockers.isNotEmpty()) {
+            call.respond(HttpStatusCode.OK, lockers)
+        } else {
+            call.respond(HttpStatusCode.NotFound, "No lockers found for user ID: $userId")
+        }
     }
 
     // Add a new locker
     post("/lockers") {
-        val lockerData = call.receive<Lockers>()
+        val receivedBody = call.receiveText()
+        println("Received raw body: $receivedBody")  // Log incoming body
 
-        val isAdded = lockerRepository.addLocker(lockerData.sensorId, lockerData.username)
-        if (isAdded) {
-            call.respond(HttpStatusCode.Created, "Locker added successfully")
-        } else {
-            call.respond(HttpStatusCode.Conflict, "Locker could not be added")
+        try {
+            val lockerData = Json.decodeFromString<Lockers>(receivedBody)
+            val userId = lockerData.userId
+            val isAdded = lockerRepository.addLocker(userId)
+
+            if (isAdded) {
+                call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: $userId")
+            } else {
+                call.respond(HttpStatusCode.Conflict, "Could not add locker: User not found or locker already exists.")
+            }
+        } catch (e: Exception) {
+            println("Error parsing request: ${e.message}")
+            call.respond(HttpStatusCode.BadRequest, "Invalid request body")
         }
     }
 
-    // Delete a locker by sensor ID
-    delete("/lockers/{sensorId}") {
-        val sensorId = call.parameters["sensorId"]
-        if (sensorId == null) {
-            call.respond(HttpStatusCode.BadRequest, "Sensor ID is required")
+
+    // Delete a locker by ID
+    delete("/lockers/{id}") {
+        val id = call.parameters["id"]?.toIntOrNull()
+        if (id == null) {
+            call.respond(HttpStatusCode.BadRequest, "Valid locker ID is required")
             return@delete
         }
 
-        val isDeleted = lockerRepository.deleteLocker(sensorId)
+        val isDeleted = lockerRepository.deleteLocker(id)
         if (isDeleted) {
             call.respond(HttpStatusCode.OK, "Locker deleted successfully")
         } else {
@@ -76,23 +83,26 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
         }
     }
 
-    // Update a locker (change username)
-    put("/lockers/{sensorId}") {
-        val sensorId = call.parameters["sensorId"]
+    // Update a locker (change user ID)
+    put("/lockers/{lockerId}") {
+        val lockerId = call.parameters["lockerId"]?.toIntOrNull()
         val updateData = call.receive<Map<String, String>>()
-        val newUsername = updateData["username"]
+        val newUserId = updateData["user_id"]?.toIntOrNull()
 
-        if (sensorId == null || newUsername.isNullOrBlank()) {
-            call.respond(HttpStatusCode.BadRequest, "Sensor ID and new username are required")
+        if (lockerId == null || newUserId == null) {
+            call.respond(HttpStatusCode.BadRequest, "Valid locker ID and new user ID are required")
             return@put
         }
 
-        val isUpdated = lockerRepository.updateLocker(sensorId, newUsername)
+        val isUpdated = lockerRepository.updateLocker(lockerId, newUserId)
+
         if (isUpdated) {
-            call.respond(HttpStatusCode.OK, "Locker updated successfully")
+            call.respond(HttpStatusCode.OK, "Locker updated successfully for locker_id: $lockerId")
         } else {
-            call.respond(HttpStatusCode.NotFound, "Locker not found")
+            call.respond(
+                HttpStatusCode.Conflict,
+                "Failed to update locker. User might already have a locker or data is incorrect."
+            )
         }
     }
-
 }

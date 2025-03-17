@@ -8,7 +8,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import kotlinx.serialization.json.Json
 import org.example.project.model.RegisterUserRequest
-import org.example.project.network.getLocalIpAddress
 
 class CreateUserService(private val client: HttpClient) {
     var errorMessage: String? = null
@@ -18,8 +17,8 @@ class CreateUserService(private val client: HttpClient) {
 
         return try {
             val registerRequest = RegisterUserRequest(email, password,username )
-            val serverIp = getLocalIpAddress()
-            val response: HttpResponse = client.post("http://$serverIp:8080:8080/auth/register") {
+            /*val serverIp = getLocalIpAddress()*/
+            val response: HttpResponse = client.post("http://192.168.68.197:8080/auth/register") {
                 contentType(io.ktor.http.ContentType.Application.Json)
                 setBody(Json.encodeToString(RegisterUserRequest.serializer(), registerRequest))
              // Ensure serialization works
