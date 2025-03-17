@@ -45,7 +45,7 @@ fun Route.lockerParcelRoutes(lockerRepository: LockerRepository) {
 
                 val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
 
-                // Insert Parcelg
+                // Insert Parcel
                 val parcelInsert = Parcel.insert {
                     it[trackingNumber] = parcelData.trackingNumber
                     it[deliveredAt] = phTime

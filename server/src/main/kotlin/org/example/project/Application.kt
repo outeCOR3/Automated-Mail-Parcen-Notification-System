@@ -23,6 +23,7 @@ import org.example.project.model.LockerRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
+import org.example.project.routes.lockerLockingRoutes
 import org.example.project.routes.lockerParcelRoutes
 import org.example.project.routes.lockerRoutes
 import org.example.project.routes.mailRoutes
@@ -32,7 +33,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "192.168.68.197", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
         .start(wait = true)
 }
 
@@ -62,6 +63,7 @@ fun Application.module() {
             lockerRoutes(lockerRepository)
             mailRoutes(lockerRepository)
             lockerParcelRoutes(lockerRepository)
+            lockerLockingRoutes(lockerRepository)
             get {
                 try{
                     val locker = lockerRepository.getAllLockers()
