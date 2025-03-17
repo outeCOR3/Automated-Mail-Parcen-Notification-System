@@ -23,6 +23,7 @@ import org.example.project.model.LockerRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
+import org.example.project.routes.lockerParcelRoutes
 import org.example.project.routes.lockerRoutes
 import org.example.project.routes.mailRoutes
 import org.example.project.routes.userRoutes
@@ -60,6 +61,7 @@ fun Application.module() {
         route("/locker") {
             lockerRoutes(lockerRepository)
             mailRoutes(lockerRepository)
+            lockerParcelRoutes(lockerRepository)
             get {
                 try{
                     val locker = lockerRepository.getAllLockers()
