@@ -36,7 +36,7 @@ fun UserListScreen(client: HttpClient) {
 
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/users/role/User")
+            val response: HttpResponse = client.get("http://192.168.68.197:8080/users/role/User")
             val responseBody = response.body<String>()
             println("Raw response: $responseBody")
 

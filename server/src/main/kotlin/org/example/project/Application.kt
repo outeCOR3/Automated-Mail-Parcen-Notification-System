@@ -30,7 +30,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.68.197", module = Application::module)
         .start(wait = true)
 }
 
