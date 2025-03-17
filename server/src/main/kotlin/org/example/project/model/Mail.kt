@@ -1,14 +1,11 @@
 package org.example.project.model
 
-import User
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object Locker : Table() {
+object Mail : Table() {
     val id = integer("id").autoIncrement()
-    val lockerid = varchar("locker_id")
-    val username = reference("user_id", User.id) 
-    val createdAt = timestamp("created_at")
-
+    val deliveredAt = timestamp("delivered_at").nullable()
+    
     override val primaryKey = PrimaryKey(id)
 }

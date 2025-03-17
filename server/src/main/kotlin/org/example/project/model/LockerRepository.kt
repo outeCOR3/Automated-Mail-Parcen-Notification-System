@@ -16,7 +16,7 @@ class LockerRepository(private val userRepository: UserRepository) {
 
     private fun resultRowToLocker(row: ResultRow): Lockers = Lockers(
         id = row[Locker.id],
-        username = row[User.username]
+        user_id = row[User.id]
     )
 
     fun getAllLockers(): List<Lockers> = transaction {
