@@ -6,5 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Lockers(
     val id: Int? = null,
-    val username: String,
+    val userId: Int,
+    val lockerId: String,
+
+
     )

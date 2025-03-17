@@ -27,37 +27,39 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
         }
     }
 
-    // Get lockers by username
-    get("/lockers/user/{username}") {
-        val username = call.parameters["username"]
-        if (username.isNullOrBlank()) {
-            call.respond(HttpStatusCode.BadRequest, "Username is required")
+    // Get lockers by user ID
+    get("/lockers/user/{userId}") {
+        val userId = call.parameters["userId"]?.toIntOrNull()
+        if (userId == null) {
+            call.respond(HttpStatusCode.BadRequest, "User ID is required")
             return@get
         }
 
-        val lockers = lockerRepository.getLockersByUsername(username)
-        call.respond(lockers)
+        val lockers = lockerRepository.getLockersById(userId)
+        if (lockers.isNotEmpty()) {
+            call.respond(HttpStatusCode.OK, lockers)
+        } else {
+            call.respond(HttpStatusCode.NotFound, "No lockers found for user ID: $userId")
+        }
     }
 
     // Add a new locker
     post("/lockers") {
         val lockerData = call.receive<Lockers>()
-        val username = lockerData.username
+        val userId = lockerData.userId
 
-        // Check if username exists and locker can be added
-        val isAdded = lockerRepository.addLocker(username)
+        // Check if user exists and locker can be added
+        val isAdded = lockerRepository.addLocker(userId)
 
         if (isAdded) {
-            call.respond(HttpStatusCode.Created, "Locker added successfully for user: $username")
+            call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: $userId")
         } else {
-            // If the user doesn't exist or locker already exists
             call.respond(
                 HttpStatusCode.Conflict,
                 "Could not add locker: User not found or locker already exists."
             )
         }
     }
-
 
     // Delete a locker by ID
     delete("/lockers/{id}") {
@@ -75,47 +77,26 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
         }
     }
 
-    // Update a locker (change username)
-    put("/lockers/{username}") {
-        // Retrieve the current username from the URL parameter
-        val username = call.parameters["username"]
-        // Retrieve the new username from the request body
+    // Update a locker (change user ID)
+    put("/lockers/{id}") {
+        val id = call.parameters["id"]?.toIntOrNull()
         val updateData = call.receive<Map<String, String>>()
-        val newUsername = updateData["username"]
+        val newUserId = updateData["user_id"]?.toIntOrNull()
 
-        // Ensure both the current username and new username are provided
-        if (username.isNullOrBlank() || newUsername.isNullOrBlank()) {
-            call.respond(HttpStatusCode.BadRequest, "Valid username and new username are required")
+        if (id == null || newUserId == null) {
+            call.respond(HttpStatusCode.BadRequest, "Valid locker ID and new user ID are required")
             return@put
         }
 
-        // Find the locker associated with the current username
-        val lockers = lockerRepository.getLockersByUsername(username)
+        val isUpdated = lockerRepository.updateLocker(id, newUserId)
 
-        if (lockers.isEmpty()) {
-            call.respond(HttpStatusCode.NotFound, "User with username $username not found")
-            return@put
-        }
-
-        // Extract the locker ID from the found locker (assuming first match)
-        val lockerId = lockers.first().id
-
-        // Ensure the locker ID is not null
-        lockerId?.let { id ->
-            // Proceed with updating the locker using the new username
-            val isUpdated = lockerRepository.updateLocker(id, newUsername)
-
-            if (isUpdated) {
-                call.respond(HttpStatusCode.OK, "Locker username updated successfully")
-            } else {
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    "Failed to update locker username. Please check if the locker exists or the data is correct."
-                )
-            }
-        } ?: run {
-            // If the locker ID is null
-            call.respond(HttpStatusCode.BadRequest, "Locker ID is required")
+        if (isUpdated) {
+            call.respond(HttpStatusCode.OK, "Locker updated successfully for ID: $id")
+        } else {
+            call.respond(
+                HttpStatusCode.Conflict,
+                "Failed to update locker. User might already have a locker or data is incorrect."
+            )
         }
     }
 }

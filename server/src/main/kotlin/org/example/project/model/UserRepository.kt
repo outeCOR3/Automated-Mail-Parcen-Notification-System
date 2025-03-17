@@ -57,7 +57,8 @@ class UserRepository {
 
         println("addUser(${user.email}): Checking if user exists...")
         if (!exists) {
-            val currentTime = LocalDateTime.now().atZone(ZoneId.of("Asia/Manila")).toInstant() // Convert to UTC+8
+            val currentTime =
+                LocalDateTime.now().atZone(ZoneId.of("Asia/Manila")).toInstant() // Convert to UTC+8
             User.insert {
                 it[username] = user.username  // Store username separately
                 it[email] = user.email
@@ -78,16 +79,26 @@ class UserRepository {
         User.deleteWhere { User.email eq email } > 0
     }
 
-    fun resetPassword(email: String, newPassword: String,confirmNewPassword:String): Boolean = transaction {
-        val hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(12))
+    fun resetPassword(email: String, newPassword: String, confirmNewPassword: String): Boolean =
+        transaction {
+            val hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(12))
 
-        val updatedRows = User.update({ User.email eq email }) {
-            it[passwordHash] = hashedPassword
+            val updatedRows = User.update({ User.email eq email }) {
+                it[passwordHash] = hashedPassword
 
+            }
+            updatedRows > 0
         }
-        updatedRows > 0
-        }
+
+    fun getUserById(id: Int): Users? = transaction {
+        User.selectAll()
+            .where { User.id eq id }
+            .map(::resultRowToUser)
+            .singleOrNull()
     }
+}
+
+
       // Returns true if at least one row was updated
 
 
