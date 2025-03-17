@@ -7,7 +7,6 @@ import kotlinx.serialization.Serializable
 data class Lockers(
     val id: Int? = null,
     val userId: Int,
-    val lockerId: Int? = null
-
-
+    val lockerId: Int? = null,
+    val isLocked: Boolean,
     )

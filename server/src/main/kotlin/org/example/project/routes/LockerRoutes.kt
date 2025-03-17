@@ -3,21 +3,19 @@ package org.example.project.routes
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.request.receive
-import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
-import kotlinx.serialization.json.Json
 import org.example.project.model.LockerRepository
 import org.example.project.model.Lockers
 
 fun Route.lockerRoutes(lockerRepository: LockerRepository) {
 
     // Get all lockers
-    get("/locker") {
+    get("/lockers") {
         val lockers = lockerRepository.getAllLockers()
 
         println("✅ Retrieved lockers: $lockers") // Debugging output
@@ -30,7 +28,7 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
     }
 
     // Get lockers by user ID
-    get("/lockers/user/{userId}") {
+    get("/users/{userId}/lockers") {
         val userId = call.parameters["userId"]?.toIntOrNull()
         if (userId == null) {
             call.respond(HttpStatusCode.BadRequest, "User ID is required")
@@ -47,16 +45,12 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
 
     // Add a new locker
     post("/lockers") {
-        val receivedBody = call.receiveText()
-        println("Received raw body: $receivedBody")  // Log incoming body
-
         try {
-            val lockerData = Json.decodeFromString<Lockers>(receivedBody)
-            val userId = lockerData.userId
-            val isAdded = lockerRepository.addLocker(userId)
+            val lockerData = call.receive<Lockers>()
+            val isAdded = lockerRepository.addLocker(lockerData.userId, lockerData.isLocked)
 
             if (isAdded) {
-                call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: $userId")
+                call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: ${lockerData.userId}")
             } else {
                 call.respond(HttpStatusCode.Conflict, "Could not add locker: User not found or locker already exists.")
             }
@@ -65,7 +59,6 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
             call.respond(HttpStatusCode.BadRequest, "Invalid request body")
         }
     }
-
 
     // Delete a locker by ID
     delete("/lockers/{id}") {
