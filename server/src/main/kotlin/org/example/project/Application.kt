@@ -30,7 +30,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    embeddedServer(Netty, port = 8080, host = org.example.project.network.getLocalIpAddress(), module = Application::module)
+    embeddedServer(Netty, port = 8080, host = "192.168.8.132", module = Application::module)
         .start(wait = true)
 }
 
@@ -56,7 +56,7 @@ fun Application.module() {
         route("/auth") {
             userRoutes(userRepository)
         }
-        route("/drop") {
+        route("/locker") {
             lockerRoutes(lockerRepository)
             get {
                 try{

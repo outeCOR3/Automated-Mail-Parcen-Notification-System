@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.mindrot.jbcrypt.BCrypt
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 
 class UserRepository {
@@ -56,7 +57,7 @@ class UserRepository {
 
         println("addUser(${user.email}): Checking if user exists...")
         if (!exists) {
-            val currentTime = LocalDateTime.now().atZone(java.time.ZoneId.of("UTC")).toInstant()
+            val currentTime = LocalDateTime.now().atZone(ZoneId.of("Asia/Manila")).toInstant() // Convert to UTC+8
             User.insert {
                 it[username] = user.username  // Store username separately
                 it[email] = user.email
