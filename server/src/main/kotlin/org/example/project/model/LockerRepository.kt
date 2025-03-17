@@ -30,7 +30,7 @@ class LockerRepository(private val userRepository: UserRepository) {
 
     fun getLockersById(id: Int): List<Lockers> = transaction {
         Locker.select(Locker.id)
-            .where{ Locker.id eq id }
+            .where { Locker.id eq id }
             .map(::resultRowToLocker)
     }
 
@@ -38,7 +38,8 @@ class LockerRepository(private val userRepository: UserRepository) {
         println("Checking if user with id: $userId exists...")
         val user = userRepository.getUserById(userId) ?: return@transaction false
 
-        val existingLocker = Locker.select(Locker.id) .where{ Locker.user_id eq userId }.singleOrNull()
+        val existingLocker =
+            Locker.select(Locker.id).where { Locker.user_id eq userId }.singleOrNull()
         if (existingLocker != null) {
             println("Locker already exists for user: $userId")
             return@transaction false
@@ -46,8 +47,8 @@ class LockerRepository(private val userRepository: UserRepository) {
 
         val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
         Locker.insert {
-            it[Locker.user_id] = userId
-            it[Locker.createdAt] = phTime
+            it[user_id] = userId
+            it[createdAt] = phTime
         }
 
         println("Added locker for user: $userId at $phTime (UTC+8)")
@@ -58,20 +59,22 @@ class LockerRepository(private val userRepository: UserRepository) {
         Locker.deleteWhere { Locker.id eq id } > 0
     }
 
-    fun updateLocker(id: Int, newUserId: Int): Boolean = transaction {
+    fun updateLocker(lockerId: Int, newUserId: Int): Boolean = transaction {
         val user = userRepository.getUserById(newUserId) ?: return@transaction false
 
-        val existingLocker = Locker.select (Locker.id).where{ Locker.user_id eq newUserId and (Locker.id neq id) }.singleOrNull()
+        val existingLocker = Locker.select(Locker.locker_id)
+            .where { Locker.user_id eq newUserId and (Locker.locker_id neq lockerId) }
+            .singleOrNull()
         if (existingLocker != null) {
             println("User $newUserId is already assigned to another locker.")
             return@transaction false
         }
 
-        val updatedRows = Locker.update({ Locker.id eq id }) {
+        val updatedRows = Locker.update({ Locker.locker_id eq lockerId }) {
             it[Locker.user_id] = newUserId
         }
 
-        println("Updated locker with ID: $id to new user ID: $newUserId")
+        println("Updated locker with locker_id: $lockerId to new user ID: $newUserId")
         updatedRows > 0
     }
 }

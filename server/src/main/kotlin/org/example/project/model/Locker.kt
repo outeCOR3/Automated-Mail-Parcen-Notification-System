@@ -6,7 +6,7 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 
 object Locker : Table() {
     val id = integer("id").autoIncrement()
-    val locker_id = varchar("locker_id", 50).uniqueIndex()
+    val locker_id = integer("locker_id").uniqueIndex().autoIncrement()
     val user_id = reference("user_id", User.id)
     val createdAt = timestamp("created_at")
 
