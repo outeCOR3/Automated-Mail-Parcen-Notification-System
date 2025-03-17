@@ -29,7 +29,7 @@ class LockerRepository(private val userRepository: UserRepository) {
     }
 
     fun getLockersById(id: Int): List<Lockers> = transaction {
-        Locker.select(Locker.id)
+        Locker.selectAll() // Changed from Locker.select(Locker.id) to select all columns
             .where { Locker.id eq id }
             .map(::resultRowToLocker)
     }
