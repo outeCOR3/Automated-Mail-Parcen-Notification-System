@@ -17,8 +17,10 @@ class LockerRepository(private val userRepository: UserRepository) {
     private fun resultRowToLocker(row: ResultRow): Lockers = Lockers(
         id = row[Locker.id],
         userId = row[Locker.user_id],  // Changed to match Lockers class
-        lockerId = row[Locker.locker_id] // Changed to match Lockers class
+        lockerId = row[Locker.locker_id], // Changed to match Lockers class
+        isLocked = row[Locker.isLocked]     // Ensure it's included
     )
+
 
 
     fun getAllLockers(): List<Lockers> = transaction {
@@ -34,7 +36,7 @@ class LockerRepository(private val userRepository: UserRepository) {
             .map(::resultRowToLocker)
     }
 
-    fun addLocker(userId: Int): Boolean = transaction {
+    fun addLocker(userId: Int,isLocked: Boolean): Boolean = transaction {
         println("Checking if user with id: $userId exists...")
         val user = userRepository.getUserById(userId) ?: return@transaction false
 
@@ -47,6 +49,8 @@ class LockerRepository(private val userRepository: UserRepository) {
 
         val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
         Locker.insert {
+            it[Locker.isLocked] = isLocked
+
             it[user_id] = userId
             it[createdAt] = phTime
         }
@@ -81,6 +85,7 @@ class LockerRepository(private val userRepository: UserRepository) {
     fun updateLockerLockState(lockerId: Int, isLocked: Boolean): Boolean = transaction {
         val updatedRows = Locker.update({ Locker.locker_id eq lockerId }) {  // Use locker_id
             it[Locker.isLocked] = isLocked
+
         }
         updatedRows > 0  // Return true if update was successful
     }
