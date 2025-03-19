@@ -25,7 +25,7 @@ class LoginService(private val client: HttpClient) {
 
         return try {
             /*val serverIp = getLocalIpAddress()*/
-            val response: HttpResponse = client.post("http://192.168.68.197:8080/auth/login") {
+            val response: HttpResponse = client.post("http://192.168.68.138:8080/auth/login") {
                 contentType(io.ktor.http.ContentType.Application.Json) // Explicitly set JSON content type
                 setBody(LoginRequest(email, password)) // Ensure serialization works
             }

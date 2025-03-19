@@ -7,7 +7,6 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import org.example.project.App
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,5 +21,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(client)
         }
+
     }
 }
