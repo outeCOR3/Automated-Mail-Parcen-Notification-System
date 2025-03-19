@@ -53,12 +53,17 @@ fun UserLandingPage(client: HttpClient, token: String) {
             val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") {
                 header("Authorization", "Bearer $token")
             }
-            val responseBody = response.body<String>()
-            val user = Json.decodeFromString<UsersDTO>(responseBody)
-            username = user.username
+            println("Response Status: ${response.status}") // Debug log
+            println("Response Body: ${response.body<String>()}") // Debug log
+            if (response.status == HttpStatusCode.OK) {
+                val user = Json.decodeFromString<UsersDTO>(response.body())
+                username = user.username
+            } else {
+                username = "Request Failed: ${response.status}"
+            }
         } catch (e: Exception) {
             println("Error fetching username: ${e.message}")
-            username = "Error"
+            username = "Error: ${e.message}"
         }
     }
 

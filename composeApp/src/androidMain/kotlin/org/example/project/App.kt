@@ -125,17 +125,20 @@ fun App(client: HttpClient) {
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    val result = loginService.login(email, password)
-                                    if (result) {
-                                        loggedInRole = loginService.getUserRole()
-                                        loggedInToken = loginService.getUserToken()
-                                    } else {
-                                        loginResponse = loginService.errorMessage
+                        Button(onClick = {
+                            scope.launch {
+                                val result = loginService.login(email, password)
+                                if (result) {
+                                    loggedInRole = loginService.getUserRole()
+                                    loggedInToken = loginService.getUserToken()
+                                    println("Token: $loggedInToken, Role: $loggedInRole") // Debug log
+                                    if (loggedInToken == null) {
+                                        loginResponse = "Token is null!"
                                     }
+                                } else {
+                                    loginResponse = loginService.errorMessage
                                 }
+                            }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
