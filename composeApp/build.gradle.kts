@@ -52,7 +52,7 @@ kotlin {
             implementation(libs.androidx.material.icons.extended.v154)
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
-
+            implementation(libs.coil.compose)
 
 
 
