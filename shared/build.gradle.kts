@@ -26,9 +26,7 @@ kotlin {
             commonMain.dependencies {
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
 
-                implementation("dev.gitlive:firebase-firestore:1.9.0")
 
-                implementation(libs.gitlive.firebase.common)// This line
                 implementation(libs.kotlinx.serialization.json.v151) // This line
                 implementation(libs.kotlinx.serialization.json.v161)
                 implementation(libs.ktor.server.content.negotiation)

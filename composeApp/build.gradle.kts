@@ -37,12 +37,13 @@ kotlin {
         
         androidMain.dependencies {
 
-            implementation(libs.firebase.bom.v3001)
+
             implementation (libs.androidx.ui)
             implementation (libs.material)
             implementation (libs.androidx.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.runtime.ktx)
+            implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.serialization.json.v150)
@@ -50,6 +51,8 @@ kotlin {
             implementation(libs.androidx.material.icons.core)
             implementation(libs.androidx.material.icons.extended.v154)
             implementation(libs.ktor.client.android)
+            implementation(libs.androidx.lifecycle.viewmodel.compose)
+
 
 
 
@@ -81,9 +84,7 @@ kotlin {
 
 
         }
-        dependencies {
-            implementation(libs.firebase.common.ktx)
-        }
+
     }
 }
 
@@ -119,6 +120,7 @@ dependencies {
     implementation(libs.androidx.animation.core.android)
     implementation(libs.androidx.ui.graphics.android)
     implementation(libs.androidx.foundation.android)
+    implementation(libs.androidx.lifecycle.viewmodel.android)
     debugImplementation(compose.uiTooling)
 }
 

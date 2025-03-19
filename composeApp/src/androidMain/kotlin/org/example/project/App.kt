@@ -53,7 +53,7 @@ fun App(client: HttpClient) {
     val loginService = remember { LoginService(client) }
 
     when {
-        loggedInRole == "User" -> UserLandingPage(email)
+        loggedInRole == "User" -> UserLandingPage(client)
         loggedInRole == "Admin" -> AdminLandingPage(
             username = email,
             onBackToLogin = {
