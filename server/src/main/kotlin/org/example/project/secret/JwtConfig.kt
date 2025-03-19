@@ -6,10 +6,10 @@ import java.util.Date
 
 object JwtConfig {
     private const val secret = "my_secret_key"
-    private const val issuer = "my_ktor_app"
+    const val issuer = "my_ktor_app"
     private const val validityInMs = 3_600_000 // 1 hour (add multiplication to add hours)
 
-    private val algorithm = Algorithm.HMAC256(secret)
+    val algorithm = Algorithm.HMAC256(secret)
 
     fun generateToken(email: String, role: String): String {
         return JWT.create()

@@ -113,7 +113,7 @@ fun UserLandingPage(client: HttpClient, token: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .background(Color(0xFFBBDEFB)),
+                    .background(Color(0xFFF5F5F5)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "Hello, ${username ?: "Loading..."}!", fontSize = 24.sp)
