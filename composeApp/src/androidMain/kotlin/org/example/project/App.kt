@@ -40,7 +40,6 @@ import org.example.project.screens.AdminLandingPage
 import org.example.project.screens.ForgotPasswordScreen
 import org.example.project.screens.UserLandingPage
 import org.example.project.service.LoginService
-import coil.compose.AsyncImage
 
 @Composable
 fun App(client: HttpClient) {
@@ -83,13 +82,7 @@ fun App(client: HttpClient) {
                             .padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        AsyncImage(
-                            model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHGRWJPqTiu5nuxxCbYYFxWiQFNTjoK1ZZAQ&s",
-                            contentDescription = "Login Logo",
-                            modifier = Modifier
-                                .fillMaxWidth(0.5f) 
-                                .padding(bottom = 16.dp)
-                        )
+
                         Text(text = "Welcome Back!", fontSize = 24.sp)
                         Spacer(modifier = Modifier.height(24.dp))
 
