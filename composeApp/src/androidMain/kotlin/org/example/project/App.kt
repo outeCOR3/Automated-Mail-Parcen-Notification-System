@@ -49,11 +49,12 @@ fun App(client: HttpClient) {
     var passwordVisible by remember { mutableStateOf(false) }
     var loginResponse by remember { mutableStateOf<String?>(null) }
     var loggedInRole by remember { mutableStateOf<String?>(null) }
+    var loggedInToken by remember { mutableStateOf<String?>(null) } // Store token
     val scope = rememberCoroutineScope()
     val loginService = remember { LoginService(client) }
 
     when {
-        loggedInRole == "User" -> UserLandingPage(client)
+        loggedInRole == "User" -> UserLandingPage(client, loggedInToken)
         loggedInRole == "Admin" -> AdminLandingPage(
             username = email,
             onBackToLogin = {

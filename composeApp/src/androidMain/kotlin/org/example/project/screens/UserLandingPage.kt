@@ -42,7 +42,7 @@ import org.example.project.model.UsersDTO
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLandingPage(client: HttpClient) {
+fun UserLandingPage(client: HttpClient, token: String) {
     var selectedItem by remember { mutableIntStateOf(0) }
     var showMenu by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf<String?>(null) }
@@ -50,9 +50,12 @@ fun UserLandingPage(client: HttpClient) {
     // Fetch user data
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") // Change route for the user base on token (get the username!)
+            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") {
+                header("Authorization", "Bearer $token")
+            }
             val responseBody = response.body<String>()
-            username = Json.decodeFromString<UsersDTO>(responseBody).username
+            val user = Json.decodeFromString<UsersDTO>(responseBody)
+            username = user.username
         } catch (e: Exception) {
             println("Error fetching username: ${e.message}")
             username = "Error"
@@ -69,13 +72,13 @@ fun UserLandingPage(client: HttpClient) {
                     }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                         DropdownMenuItem(
-                            onClick = { showMenu = false },
                             text = { Text("Profile") },
+                            onClick = { showMenu = false },
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
                         )
                         DropdownMenuItem(
-                            onClick = { showMenu = false },
                             text = { Text("Logout") },
+                            onClick = { showMenu = false }, // Add logout logic if needed
                             leadingIcon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") }
                         )
                     }
