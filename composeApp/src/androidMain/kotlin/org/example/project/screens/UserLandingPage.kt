@@ -50,7 +50,7 @@ fun UserLandingPage(client: HttpClient) {
     // Fetch user data
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/role/User")
+            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") // Change route for the user base on token (get the username!)
             val responseBody = response.body<String>()
             username = Json.decodeFromString<UsersDTO>(responseBody).username
         } catch (e: Exception) {

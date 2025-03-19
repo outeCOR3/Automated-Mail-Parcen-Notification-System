@@ -97,6 +97,24 @@ fun Application.module() {
 
         authenticate("jwt-auth") {
             route("/users") {
+                requireRole("User") {
+                    get("/me") {
+                    val principal = call.principal<JWTPrincipal>()
+                    val email = principal?.payload?.subject
+                    if (email == null) {
+                        call.respond(HttpStatusCode.Unauthorized, "Invalid token")
+                        return@get
+                    }
+
+                    val user = userRepository.getUserByEmail(email)
+                    if (user != null) {
+                        call.respond(user)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
+                    }
+                  }
+                }  
+
                 requireRole("Admin") {
                     get {
                         try {
