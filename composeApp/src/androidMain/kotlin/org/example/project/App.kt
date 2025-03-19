@@ -131,6 +131,7 @@ fun App(client: HttpClient) {
                                     val result = loginService.login(email, password)
                                     if (result) {
                                         loggedInRole = loginService.getUserRole()
+                                        loggedInToken = loginService.getUserToken()
                                     } else {
                                         loginResponse = loginService.errorMessage
                                     }
