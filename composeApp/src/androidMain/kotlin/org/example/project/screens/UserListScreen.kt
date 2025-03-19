@@ -1,21 +1,10 @@
-
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,23 +14,30 @@ import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 import org.example.project.model.UsersDTO
 
 @Composable
-fun UserListScreen(client: HttpClient) {
+fun UserListScreen(client: HttpClient, token: String) {
     val users = remember { mutableStateOf<List<UsersDTO>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/role/User")
-            val responseBody = response.body<String>()
-            println("Raw response: $responseBody")
-
-            val userList = Json.decodeFromString<List<UsersDTO>>(responseBody)
-            users.value = userList
+            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/role/User") {
+                header("Authorization", "Bearer $token")
+            }
+            println("UserList Response Status: ${response.status}")
+            println("UserList Response Body: ${response.body<String>()}")
+            if (response.status == HttpStatusCode.OK) {
+                val userList = Json.decodeFromString<List<UsersDTO>>(response.body())
+                users.value = userList
+            } else {
+                println("Failed to fetch users: ${response.status}")
+            }
             isLoading.value = false
         } catch (e: Exception) {
             println("Error fetching users: ${e.message}")
@@ -86,9 +82,9 @@ fun UserListScreen(client: HttpClient) {
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
-                    itemsIndexed(users.value) { index, user -> // Using itemsIndexed to get index
+                    itemsIndexed(users.value) { index, user ->
                         Text(
-                            text = "TENANT ${index + 1}", // Adding index
+                            text = "TENANT ${index + 1}",
                             fontSize = 14.sp,
                             color = Color.Gray,
                             modifier = Modifier.padding(8.dp)
@@ -96,20 +92,13 @@ fun UserListScreen(client: HttpClient) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp),  // Padding between cards
-                            shape = RoundedCornerShape(16.dp), // Rounded corners for the card
+                                .padding(8.dp),
+                            shape = RoundedCornerShape(16.dp),
                             backgroundColor = Color.White,
-                            elevation = 4.dp  // Elevation for the card
+                            elevation = 4.dp
                         ) {
-                            Column(
-                                modifier = Modifier.padding(16.dp) // Padding inside the card
-                            ) {
-
-                                Text(
-                                    text = user.username, // User's username text
-                                    fontSize = 16.sp,
-                                    color = Color.Black
-                                )
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(text = user.username, fontSize = 16.sp, color = Color.Black)
                             }
                         }
                     }
