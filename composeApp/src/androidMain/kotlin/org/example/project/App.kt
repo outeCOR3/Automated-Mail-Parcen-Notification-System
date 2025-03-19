@@ -49,17 +49,21 @@ fun App(client: HttpClient) {
     var passwordVisible by remember { mutableStateOf(false) }
     var loginResponse by remember { mutableStateOf<String?>(null) }
     var loggedInRole by remember { mutableStateOf<String?>(null) }
+    var loggedInToken by remember { mutableStateOf<String?>(null) } // Store token
     val scope = rememberCoroutineScope()
     val loginService = remember { LoginService(client) }
 
     when {
-        loggedInRole == "User" -> UserLandingPage(client)
-        loggedInRole == "Admin" -> AdminLandingPage(
-            username = email,
-            onBackToLogin = {
-                loggedInRole = ""  // Clear role
-                screenState = "Login"  // Reset to login state
-            }
+        loggedInRole == "User" -> loggedInToken?.let { UserLandingPage(client, it) }
+        loggedInRole == "Admin" && loggedInToken != null -> AdminLandingPage(
+                    token = loggedInToken!!, // Pass token
+                    client = client, // Pass client
+                    // Temporary, will be replaced by /me
+                    onBackToLogin = {
+                        loggedInRole = null
+                        loggedInToken = null
+                        screenState = "Login"
+                    }
         )
 
         screenState == "ForgotPassword" -> ForgotPasswordScreen(
@@ -124,16 +128,20 @@ fun App(client: HttpClient) {
 
                         Spacer(modifier = Modifier.height(24.dp))
 
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    val result = loginService.login(email, password)
-                                    if (result) {
-                                        loggedInRole = loginService.getUserRole()
-                                    } else {
-                                        loginResponse = loginService.errorMessage
+                        Button(onClick = {
+                            scope.launch {
+                                val result = loginService.login(email, password)
+                                if (result) {
+                                    loggedInRole = loginService.getUserRole()
+                                    loggedInToken = loginService.getUserToken()
+                                    println("Token: $loggedInToken, Role: $loggedInRole") // Debug log
+                                    if (loggedInToken == null) {
+                                        loginResponse = "Token is null!"
                                     }
+                                } else {
+                                    loginResponse = loginService.errorMessage
                                 }
+                            }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

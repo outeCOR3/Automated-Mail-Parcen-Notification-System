@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,10 +45,17 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.statement.HttpResponse
+import kotlinx.serialization.json.Json
+import org.example.project.model.UsersDTO
 
 @Composable
 fun AdminLandingPage(
-    username: String,
+    token: String, // Add token parameter
+    client: HttpClient, // Pass client explicitly
     onNavigateToHome: () -> Unit = {},
     onNavigateToLock: () -> Unit = {},
     onNavigateToNotifications: () -> Unit = {},
@@ -57,76 +65,61 @@ fun AdminLandingPage(
     var menuExpanded by remember { mutableStateOf(false) }
     var showCreateUser by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf(0) }
+    var adminUsername by remember { mutableStateOf<String?>(null) } // Fetch admin username
 
     var isHomeIconClicked by remember { mutableStateOf(false) }
     var isLockIconClicked by remember { mutableStateOf(false) }
     var isNotificationIconClicked by remember { mutableStateOf(false) }
 
-    val client = HttpClient()
+    // Fetch admin username via /users/me
+    LaunchedEffect(Unit) {
+        try {
+            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") {
+                header("Authorization", "Bearer $token")
+            }
+            println("Admin /me Status: ${response.status}")
+            println("Admin /me Body: ${response.body<String>()}")
+            if (response.status == io.ktor.http.HttpStatusCode.OK) {
+                val user = Json.decodeFromString<UsersDTO>(response.body())
+                adminUsername = user.username
+            } else {
+                adminUsername = "Error: ${response.status}"
+            }
+        } catch (e: Exception) {
+            println("Error fetching admin username: ${e.message}")
+            adminUsername = "Error: ${e.message}"
+        }
+    }
 
     if (showCreateUser) {
         CreateUserScreen(
-            onCreateUser = { username, password, role ->
+            onCreateUser = { username, email, password ->
                 showCreateUser = false
-                // Handle user creation logic with role
+                // Handle user creation logic
             },
             onCancel = { showCreateUser = false },
             client = client
         )
     } else {
-        // Animation configurations
-        val animationSpec = tween<Dp>(
-            durationMillis = 400,
-            easing = androidx.compose.animation.core.FastOutSlowInEasing
-        )
+        val animationSpec = tween<Dp>(durationMillis = 400, easing = androidx.compose.animation.core.FastOutSlowInEasing)
 
-        // Home icon animations
-        val homeIconSize by animateDpAsState(
-            targetValue = if (isHomeIconClicked) 90.dp else 80.dp,
-            animationSpec = animationSpec
-        )
-        val homeIconOffset by animateDpAsState(
-            targetValue = if (isHomeIconClicked) (-40).dp else (9).dp,
-            animationSpec = animationSpec
-        )
-
-        // Lock icon animations
-        val lockIconSize by animateDpAsState(
-            targetValue = if (isLockIconClicked) 90.dp else 80.dp,
-            animationSpec = animationSpec
-        )
-        val lockIconOffset by animateDpAsState(
-            targetValue = if (isLockIconClicked) (-40).dp else (9).dp,
-            animationSpec = animationSpec
-        )
-
-        // Notification icon animations
-        val notificationIconSize by animateDpAsState(
-            targetValue = if (isNotificationIconClicked) 90.dp else 80.dp,
-            animationSpec = animationSpec
-        )
-        val notificationIconOffset by animateDpAsState(
-            targetValue = if (isNotificationIconClicked) (-40).dp else (9).dp,
-            animationSpec = animationSpec
-        )
+        val homeIconSize by animateDpAsState(targetValue = if (isHomeIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
+        val homeIconOffset by animateDpAsState(targetValue = if (isHomeIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
+        val lockIconSize by animateDpAsState(targetValue = if (isLockIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
+        val lockIconOffset by animateDpAsState(targetValue = if (isLockIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
+        val notificationIconSize by animateDpAsState(targetValue = if (isNotificationIconClicked) 90.dp else 80.dp, animationSpec = animationSpec)
+        val notificationIconOffset by animateDpAsState(targetValue = if (isNotificationIconClicked) (-40).dp else (9).dp, animationSpec = animationSpec)
 
         Column(modifier = Modifier.fillMaxSize()) {
             TopAppBar(
-                title = { Text(text = "LANDLORD", color = Color.White) },
+                title = { Text(text = "LANDLORD - ${adminUsername ?: "Loading..."}", color = Color.White) },
                 backgroundColor = Color(0xFF78C2D1),
                 actions = {
                     Box {
                         IconButton(onClick = { menuExpanded = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                         }
-                        DropdownMenu(
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false }
-                        ) {
+                        DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                             DropdownMenuItem(onClick = {
                                 menuExpanded = false
                                 showCreateUser = true
@@ -144,15 +137,10 @@ fun AdminLandingPage(
                 }
             )
 
-            // Show UserListScreen directly
-            UserListScreen(
+            // Pass token to UserListScreen
+            UserListScreen(client = client, token = token)
 
-                client = client
-            )
-
-            // Bottom navigation bar
             Box(modifier = Modifier.fillMaxWidth()) {
-                // Home icon
                 Box(
                     modifier = Modifier
                         .offset(y = homeIconOffset)
@@ -170,16 +158,10 @@ fun AdminLandingPage(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Filled.Home,
-                            contentDescription = "Home",
-                            tint = Color.Black,
-                            modifier = Modifier.size(34.dp)
-                        )
+                        Icon(Icons.Filled.Home, contentDescription = "Home", tint = Color.Black, modifier = Modifier.size(34.dp))
                     }
                 }
 
-                // Lock icon
                 Box(
                     modifier = Modifier
                         .offset(y = lockIconOffset)
@@ -196,16 +178,10 @@ fun AdminLandingPage(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Filled.Lock,
-                            contentDescription = "Lock",
-                            tint = Color.Black,
-                            modifier = Modifier.size(34.dp)
-                        )
+                        Icon(Icons.Filled.Lock, contentDescription = "Lock", tint = Color.Black, modifier = Modifier.size(34.dp))
                     }
                 }
 
-                // Notification icon
                 Box(
                     modifier = Modifier
                         .offset(y = notificationIconOffset)
@@ -223,20 +199,13 @@ fun AdminLandingPage(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            Icons.Filled.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.Black,
-                            modifier = Modifier.size(34.dp)
-                        )
+                        Icon(Icons.Filled.Notifications, contentDescription = "Notifications", tint = Color.Black, modifier = Modifier.size(34.dp))
                     }
                 }
             }
 
-            // Bottom app bar
             val cutoutRadius = 30.dp
             val cutoutOffsetY = 20.dp
-
             val density = LocalDensity.current
             val cutoutRadiusPx = with(density) { cutoutRadius.toPx() }
             val cutoutOffsetYPx = with(density) { cutoutOffsetY.toPx() }

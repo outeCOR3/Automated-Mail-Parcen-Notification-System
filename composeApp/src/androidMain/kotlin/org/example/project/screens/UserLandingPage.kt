@@ -36,13 +36,15 @@ import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 import org.example.project.model.UsersDTO
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLandingPage(client: HttpClient) {
+fun UserLandingPage(client: HttpClient, token: String) {
     var selectedItem by remember { mutableIntStateOf(0) }
     var showMenu by remember { mutableStateOf(false) }
     var username by remember { mutableStateOf<String?>(null) }
@@ -50,12 +52,20 @@ fun UserLandingPage(client: HttpClient) {
     // Fetch user data
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/role/User")
-            val responseBody = response.body<String>()
-            username = Json.decodeFromString<UsersDTO>(responseBody).username
+            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") {
+                header("Authorization", "Bearer $token")
+            }
+            println("Response Status: ${response.status}") // Debug log
+            println("Response Body: ${response.body<String>()}") // Debug log
+            if (response.status == HttpStatusCode.OK) {
+                val user = Json.decodeFromString<UsersDTO>(response.body())
+                username = user.username
+            } else {
+                username = "Request Failed: ${response.status}"
+            }
         } catch (e: Exception) {
             println("Error fetching username: ${e.message}")
-            username = "Error"
+            username = "Error: ${e.message}"
         }
     }
 
@@ -69,13 +79,13 @@ fun UserLandingPage(client: HttpClient) {
                     }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                         DropdownMenuItem(
-                            onClick = { showMenu = false },
                             text = { Text("Profile") },
+                            onClick = { showMenu = false },
                             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
                         )
                         DropdownMenuItem(
-                            onClick = { showMenu = false },
                             text = { Text("Logout") },
+                            onClick = { showMenu = false }, // Add logout logic if needed
                             leadingIcon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") }
                         )
                     }
