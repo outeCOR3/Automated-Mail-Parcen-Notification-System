@@ -97,7 +97,6 @@ fun Application.module() {
 
         authenticate("jwt-auth") {
             route("/users") {
-                requireRole("User") {
                     get("/me") {
                     val principal = call.principal<JWTPrincipal>()
                     val email = principal?.payload?.subject
@@ -113,7 +112,6 @@ fun Application.module() {
                         call.respond(HttpStatusCode.NotFound, mapOf("error" to "User not found"))
                     }
                   }
-                }  
 
                 requireRole("Admin") {
                     get {
