@@ -54,11 +54,11 @@ fun App(client: HttpClient) {
     val loginService = remember { LoginService(client) }
 
     when {
-        loggedInRole == "User" -> UserLandingPage(client, loggedInToken)
+        loggedInRole == "User" -> loggedInToken?.let { UserLandingPage(client, it) }
         loggedInRole == "Admin" && loggedInToken != null -> AdminLandingPage(
                     token = loggedInToken!!, // Pass token
                     client = client, // Pass client
-                    username = email, // Temporary, will be replaced by /me
+                    // Temporary, will be replaced by /me
                     onBackToLogin = {
                         loggedInRole = null
                         loggedInToken = null
