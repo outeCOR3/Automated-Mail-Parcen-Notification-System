@@ -1,107 +1,112 @@
 package org.example.project.screens
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.*
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.HttpStatusCode
-import kotlinx.serialization.json.Json
-import org.example.project.model.UsersDTO
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit) {
-    var selectedItem by remember { mutableIntStateOf(0) }
-    var showMenu by remember { mutableStateOf(false) }
-    var username by remember { mutableStateOf<String?>(null) }
+fun LockingAction(token: String) {
+    var isLocked by remember { mutableStateOf(true) }
 
-    // Fetch user data
-    LaunchedEffect(Unit) {
-        try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/users/me") {
-                header("Authorization", "Bearer $token")
-            }
-            if (response.status == HttpStatusCode.OK) {
-                val user = Json.decodeFromString<UsersDTO>(response.body())
-                username = user.username
-            } else {
-                username = "Request Failed: ${response.status}"
-            }
-        } catch (e: Exception) {
-            username = "Error: ${e.message}"
-        }
-    }
+    // Rotation animation
+    val rotation by animateFloatAsState(
+        targetValue = if (isLocked) 0f else 360f,
+        animationSpec = tween(
+            durationMillis = 300, // 2 seconds for a slower spin
+            easing = LinearEasing // Smooth constant speed
+        ),
+        label = "Rotation"
+    )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(text = username ?: "Loading...", fontSize = 18.sp) },
-                actions = {
-                    IconButton(onClick = { showMenu = !showMenu }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu")
-                    }
-                    DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                        DropdownMenuItem(
-                            text = { Text("Profile") },
-                            onClick = { showMenu = false },
-                            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Profile") }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Logout") },
-                            onClick = {
-                                showMenu = false
-                                onBackToLogin()}, // Add logout logic
-                            leadingIcon = { Icon(Icons.AutoMirrored.Filled.ExitToApp, contentDescription = "Logout") }
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF42A5F5))
+
+    // Floating effect (Y-axis movement)
+    val offsetY by animateFloatAsState(
+        targetValue = if (isLocked) 0f else -15f,
+        animationSpec = tween(800, easing = FastOutSlowInEasing),
+        label = "Floating Effect"
+    )
+
+    // Glow effect (Opacity changes)
+    val glow by animateFloatAsState(
+        targetValue = if (isLocked) 0.2f else 0.8f,
+        animationSpec = tween(500, easing = FastOutSlowInEasing),
+        label = "Glow Effect"
+    )
+
+    // Background color shift
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isLocked) Color.White else Color(0xFF2E2E2E), // Soft Dark Gray when Unlocked
+        animationSpec = tween(600),
+        label = "Background Shift"
+    )
+
+    // Lock color
+    val lockColor by animateColorAsState(
+        targetValue = if (isLocked) Color(0xFF90CAF9) else Color(0xFFFFC107),
+        animationSpec = tween(600),
+        label = "Lock Color"
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Lock Icon (No Shadows, PNG-like)
+            Icon(
+                imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
+                contentDescription = "Lock Icon",
+                tint = lockColor,
+                modifier = Modifier
+                    .size(200.dp)
+                    .graphicsLayer(
+                        rotationZ = rotation,
+                        translationY = offsetY
+                    )
+                    .clickable { isLocked = !isLocked }
             )
-        },
-        bottomBar = {
-            NavigationBar(containerColor = Color(0xFF42A5F5)) {
-                val items = listOf("Home", "Lock", "Notifications")
-                val icons = listOf(Icons.Default.Home, Icons.Default.Lock, Icons.Default.Notifications)
 
-                items.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        icon = { Icon(icons[index], contentDescription = item) },
-                        label = { Text(item) },
-                        selected = selectedItem == index,
-                        onClick = { selectedItem = index }
+            // Glowing Effect (Only When Unlocked)
+            if (!isLocked) {
+                Canvas(
+                    modifier = Modifier.size(250.dp)
+                ) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(lockColor.copy(alpha = glow), Color.Transparent),
+                            center = Offset(size.width / 2, size.height / 2),
+                            radius = size.width / 2
+                        )
                     )
                 }
             }
-        },
-        content = { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(Color(0xFFF5F5F5)),
-                contentAlignment = Alignment.Center
-            ) {
-                when (selectedItem) {
-                    0 -> Text(text = "Hello, ${username ?: "Loading..."}!", fontSize = 24.sp)
-                    1 -> LockingAction(token) // Pass token to LockingAction
-                }
-            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Lock Status Text
+            Text(
+                text = if (isLocked) "Lockedsss" else "Unlocked",
+                fontSize = 28.sp,
+                color = lockColor
+            )
         }
-    )
-}
+    }
