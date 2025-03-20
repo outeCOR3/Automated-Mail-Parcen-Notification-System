@@ -104,9 +104,10 @@ fun LockingAction(token: String) {
 
             // Lock Status Text
             Text(
-                text = if (isLocked) "Lockedsss" else "Unlocked",
+                text = if (isLocked) "Locked" else "Unlocked",
                 fontSize = 28.sp,
                 color = lockColor
             )
         }
     }
+}

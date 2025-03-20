@@ -20,7 +20,7 @@ class ForgotPasswordService(private val client: HttpClient) {
         return try {
             val resetRequest = ResetPasswordRequest(email, newPassword,confirmNewPassword)
             /*val serverIp = getLocalIpAddress()  // Get the IP dynamically*/
-            val response: HttpResponse = client.post("http://192.168.68.138:8080/auth/reset-password") {
+            val response: HttpResponse = client.post("http://192.168.8.132:8080/auth/reset-password") {
                 contentType(ContentType.Application.Json)
                 setBody(Json.encodeToString(ResetPasswordRequest.serializer(), resetRequest))
             }
