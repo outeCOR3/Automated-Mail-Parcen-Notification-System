@@ -54,23 +54,33 @@ fun App(client: HttpClient) {
     val loginService = remember { LoginService(client) }
 
     when {
-        loggedInRole == "User" -> loggedInToken?.let { UserLandingPage(client, it) }
+        loggedInRole == "User" -> loggedInToken?.let {
+            UserLandingPage(
+                client,
+                it,
+                onBackToLogin = {
+                    loggedInRole = null
+                    loggedInToken = null
+                    screenState = "Login"
+                }
+            )
+        }
         loggedInRole == "Admin" && loggedInToken != null -> AdminLandingPage(
-                    token = loggedInToken!!, // Pass token
-                    client = client, // Pass client
-                    onBackToLogin = {
-                        loggedInRole = null
-                        loggedInToken = null
-                        screenState = "Login"
-                    }
+            token = loggedInToken!!,
+            client = client,
+            onBackToLogin = {
+                loggedInRole = null
+                loggedInToken = null
+                screenState = "Login"
+            }
         )
-
         screenState == "ForgotPassword" -> ForgotPasswordScreen(
             onBackToLogin = { screenState = "Login" },
             onPasswordReset = { screenState = "Login" },
             client = client
         )
-        else -> {
+
+    else -> {
             MaterialTheme {
                 Box(
                     modifier = Modifier.fillMaxSize(),

@@ -12,6 +12,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "itonaa",
     ) {
-        App(client = client) // ✅ Pass the correct userApi
+
     }
 }
