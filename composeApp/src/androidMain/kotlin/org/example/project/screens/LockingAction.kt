@@ -20,48 +20,56 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.launch
+
+import org.example.project.service.LockingActionService
 
 @Composable
 fun LockingAction(token: String) {
     var isLocked by remember { mutableStateOf(true) }
+    val lockingActionService = remember { LockingActionService(HttpClient()) }
 
-    // Rotation animation
+    // This will attempt to fetch the lock status when the token is available
+    LaunchedEffect(token) {
+        if (lockingActionService.getLockStatus(token)) {
+            val lockers = lockingActionService.getLockers()
+            // You can use the locker status to update your UI or isLocked state
+            if (lockers != null && lockers.isNotEmpty()) {
+                isLocked = lockers.first().isLocked // Example logic
+            }
+        } else {
+            // Handle error (display message, etc.)
+        }
+    }
+
+    // Existing animation and UI code follows...
     val rotation by animateFloatAsState(
         targetValue = if (isLocked) 0f else 360f,
         animationSpec = tween(
-            durationMillis = 300, // 2 seconds for a slower spin
-            easing = LinearEasing // Smooth constant speed
-        ),
-        label = "Rotation"
+            durationMillis = 300,
+            easing = LinearEasing
+        )
     )
 
-
-    // Floating effect (Y-axis movement)
     val offsetY by animateFloatAsState(
         targetValue = if (isLocked) 0f else -15f,
-        animationSpec = tween(800, easing = FastOutSlowInEasing),
-        label = "Floating Effect"
+        animationSpec = tween(800, easing = FastOutSlowInEasing)
     )
 
-    // Glow effect (Opacity changes)
     val glow by animateFloatAsState(
         targetValue = if (isLocked) 0.2f else 0.8f,
-        animationSpec = tween(500, easing = FastOutSlowInEasing),
-        label = "Glow Effect"
+        animationSpec = tween(500, easing = FastOutSlowInEasing)
     )
 
-    // Background color shift
     val backgroundColor by animateColorAsState(
-        targetValue = if (isLocked) Color.White else Color(0xFF2E2E2E), // Soft Dark Gray when Unlocked
-        animationSpec = tween(600),
-        label = "Background Shift"
+        targetValue = if (isLocked) Color.White else Color(0xFF2E2E2E),
+        animationSpec = tween(600)
     )
 
-    // Lock color
     val lockColor by animateColorAsState(
         targetValue = if (isLocked) Color(0xFF90CAF9) else Color(0xFFFFC107),
-        animationSpec = tween(600),
-        label = "Lock Color"
+        animationSpec = tween(600)
     )
 
     Box(
@@ -71,7 +79,6 @@ fun LockingAction(token: String) {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Lock Icon (No Shadows, PNG-like)
             Icon(
                 imageVector = if (isLocked) Icons.Default.Lock else Icons.Default.LockOpen,
                 contentDescription = "Lock Icon",
@@ -85,11 +92,8 @@ fun LockingAction(token: String) {
                     .clickable { isLocked = !isLocked }
             )
 
-            // Glowing Effect (Only When Unlocked)
             if (!isLocked) {
-                Canvas(
-                    modifier = Modifier.size(250.dp)
-                ) {
+                Canvas(modifier = Modifier.size(250.dp)) {
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(lockColor.copy(alpha = glow), Color.Transparent),
@@ -102,7 +106,6 @@ fun LockingAction(token: String) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Lock Status Text
             Text(
                 text = if (isLocked) "Locked" else "Unlocked",
                 fontSize = 28.sp,
@@ -111,3 +114,6 @@ fun LockingAction(token: String) {
         }
     }
 }
+
+
+

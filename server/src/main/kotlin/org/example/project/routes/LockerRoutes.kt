@@ -2,6 +2,8 @@ package org.example.project.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -11,8 +13,9 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import org.example.project.model.LockerRepository
 import org.example.project.model.Lockers
+import org.example.project.model.UserRepository
 
-fun Route.lockerRoutes(lockerRepository: LockerRepository) {
+fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRepository) {
 
     // Get all lockers
     get("/lockers") {
@@ -26,6 +29,41 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
             call.respond(HttpStatusCode.NoContent, "No lockers found")
         }
     }
+    get("/me") {
+        val principal = call.principal<JWTPrincipal>()
+        println("principal: $principal")
+
+        // Retrieve the email from the JWT token (sub claim contains email)
+        val email = principal?.payload?.getClaim("sub")?.asString()
+        println("User email from token: $email")  // Log for debugging
+
+        if (email == null) {
+            call.respond(HttpStatusCode.Unauthorized, "User email missing or invalid token")
+            return@get
+        }
+
+        // Find the user based on the email
+        val user = userRepository.getUserByEmail(email)
+        if (user == null) {
+            call.respond(HttpStatusCode.NotFound, "User not found")
+            return@get
+        }
+
+        val userId = user.id
+
+        // Get lockers for the user by userId
+        val lockers = lockerRepository.getLockersById(userId)
+        if (lockers.isNotEmpty()) {
+            call.respond(HttpStatusCode.OK, lockers)
+        } else {
+            call.respond(HttpStatusCode.NotFound, "No lockers found for user ID: $userId")
+        }
+    }
+
+
+
+
+
 
     // Get lockers by user ID
     get("/users/{userId}/lockers") {
@@ -41,6 +79,7 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository) {
         } else {
             call.respond(HttpStatusCode.NotFound, "No lockers found for user ID: $userId")
         }
+
     }
 
     // Add a new locker

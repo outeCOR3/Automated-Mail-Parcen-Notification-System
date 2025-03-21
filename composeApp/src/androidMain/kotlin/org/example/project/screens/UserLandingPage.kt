@@ -23,6 +23,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 import org.example.project.model.UsersDTO
+import org.example.project.service.LockingActionService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

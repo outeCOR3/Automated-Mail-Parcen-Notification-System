@@ -14,6 +14,7 @@ import java.time.ZoneId
 
 class UserRepository {
     fun resultRowToUser(row: ResultRow): Users = Users(
+        id = row[User.id],
         email = row[User.email],
         password = row[User.passwordHash],
         roles = row[User.role],
