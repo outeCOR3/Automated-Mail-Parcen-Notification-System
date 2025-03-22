@@ -56,7 +56,7 @@ fun Route.userRoutes(userRepository: UserRepository) {
 
             // Save user with a separate username and email
             val role = userData.roles // Accepts User or Admin from the request
-            val user = Users(userData.username, userData.email, hashedPassword, role)
+                val user = Users(username = userData.username,email = userData.email, password =hashedPassword, roles = role)
             val isAdded = userRepository.addUser(user)
 
             if (isAdded) {

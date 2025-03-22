@@ -18,13 +18,15 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
+import org.example.project.model.Lockers
 import org.example.project.model.UsersDTO
 
 @Composable
 fun UserListScreen(client: HttpClient, token: String) {
     val users = remember { mutableStateOf<List<UsersDTO>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-
+    var isLocked by remember { mutableStateOf(true) }
+    var lockers by remember { mutableStateOf<Lockers?>(null) }
     LaunchedEffect(Unit) {
         try {
             val response: HttpResponse = client.get("http://192.168.8.132:8080/users/role/User") {

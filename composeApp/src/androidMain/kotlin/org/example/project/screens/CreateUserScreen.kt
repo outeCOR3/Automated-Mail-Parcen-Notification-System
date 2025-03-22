@@ -41,7 +41,9 @@ fun CreateUserScreen(
     onCancel: () -> Unit = {},
     client: HttpClient
 ) {
+
     var username by remember { mutableStateOf("") }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -144,7 +146,7 @@ fun CreateUserScreen(
                 onClick = {
                     if (username.isNotBlank() && email.isNotBlank() && password == confirmPassword && password.length >= 6) {
                         scope.launch {
-                            val result = createUserService.register(email, password,username)
+                            val result = createUserService.register(email,password,username)
                             if (result) {
                                 onCreateUser(email, password,username)
                             } else {

@@ -94,10 +94,10 @@ fun Application.module() {
         authenticate("jwt-auth") {
             route("/locker") {
                 requireRole("User") {
-                    lockerRoutes(lockerRepository)
+                    lockerRoutes(lockerRepository,userRepository)
+                    lockerLockingRoutes(lockerRepository)
                     mailRoutes(lockerRepository)
                     lockerParcelRoutes(lockerRepository)
-                    lockerLockingRoutes(lockerRepository)
                     get {
                         try {
                             val locker = lockerRepository.getAllLockers()
@@ -114,6 +114,7 @@ fun Application.module() {
         }
 
         authenticate("jwt-auth") {
+            lockerRoutes(lockerRepository,userRepository)
             route("/users") {
                     get("/me") {
                     val principal = call.principal<JWTPrincipal>()
@@ -199,7 +200,7 @@ fun Application.module() {
                             }
 
                             // Add user with separate username and email
-                            if (userRepository.addUser(Users(user.username, user.email, hashedPassword, user.roles))) {
+                            if (userRepository.addUser(Users(user.id,user.username, user.email, hashedPassword, user.roles))) {
                                 call.respond(HttpStatusCode.Created, mapOf("message" to "User created successfully"))
                             } else {
                                 call.respond(HttpStatusCode.Conflict, mapOf("error" to "Failed to create user"))
