@@ -16,6 +16,43 @@ class LockingActionService(private val client: HttpClient) {
     private var errorMessage: String? = null
     private var lockerId: Int? = null
 
+    suspend fun getLockerState(token: String): Boolean? {
+        errorMessage = null
+
+        if (token.isBlank()) {
+            errorMessage = "Token cannot be empty."
+            return null
+        }
+
+        return try {
+            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
+                headers {
+                    append("Authorization", "Bearer $token")
+                }
+            }
+
+            if (response.status != HttpStatusCode.OK) {
+                errorMessage = "Failed to retrieve locker state. Status: ${response.status}"
+                return null
+            }
+
+            val lockers: List<LockingAction> = Json { ignoreUnknownKeys = true }
+                .decodeFromString(response.body())
+
+            val locker = lockers.firstOrNull()
+            if (locker == null) {
+                errorMessage = "No locker found for the given token."
+                return null
+            }
+
+            lockerId = locker.id
+            locker.isLocked // Return the current locker state
+        } catch (e: Exception) {
+            errorMessage = "Error retrieving locker state: ${e.localizedMessage}"
+            null
+        }
+    }
+
     suspend fun toggleLockerState(token: String): Boolean {
         errorMessage = null
 
@@ -25,31 +62,9 @@ class LockingActionService(private val client: HttpClient) {
         }
 
         return try {
-            // Step 1: Get locker info
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
-                headers {
-                    append("Authorization", "Bearer $token")
-                }
-            }
+            val currentState = getLockerState(token) ?: return false // Fetch current state first
+            val newLockState = !currentState  // Toggle the current state
 
-            if (response.status != HttpStatusCode.OK) {
-                errorMessage = "Failed to retrieve user info. Status: ${response.status}"
-                return false
-            }
-
-            val lockers: List<LockingAction> = Json { ignoreUnknownKeys = true }
-                .decodeFromString(response.body())
-
-            val locker = lockers.firstOrNull()
-            if (locker == null) {
-                errorMessage = "No locker found for the given token."
-                return false
-            }
-
-            lockerId = locker.id
-            val newLockState = !locker.isLocked  // Toggle the current state
-
-            // Step 2: Send updated lock state
             val lockResponse: HttpResponse = client.post("http://192.168.8.132:8080/locker/lockers/lock") {
                 headers {
                     append("Authorization", "Bearer $token")
@@ -70,6 +85,5 @@ class LockingActionService(private val client: HttpClient) {
         }
     }
 
-fun getErrorMessage(): String? = errorMessage
+    fun getErrorMessage(): String? = errorMessage
 }
-
