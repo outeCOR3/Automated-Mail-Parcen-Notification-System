@@ -96,7 +96,7 @@ fun LockingAction(token: String,client: HttpClient) {
                     .clickable {
                         coroutineScope.launch {
                             // Call the lock/unlock service
-                            val success = lockingService.lockUnlockLocker(token, !isLocked)
+                            val success = lockingService.toggleLockerState(token)
                             if (success) {
                                 isLocked = !isLocked // Update state only on success
                             }

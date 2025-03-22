@@ -146,7 +146,7 @@ fun CreateUserScreen(
                 onClick = {
                     if (username.isNotBlank() && email.isNotBlank() && password == confirmPassword && password.length >= 6) {
                         scope.launch {
-                            val result = createUserService.register(email, password,username)
+                            val result = createUserService.register(email,password,username)
                             if (result) {
                                 onCreateUser(email, password,username)
                             } else {

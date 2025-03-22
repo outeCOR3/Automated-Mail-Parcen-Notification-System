@@ -8,14 +8,15 @@ import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.example.project.model.LockingAction
-
 
 class LockingActionService(private val client: HttpClient) {
     private var errorMessage: String? = null
     private var lockerId: Int? = null
 
-    suspend fun lockUnlockLocker(token: String, isLocked: Boolean): Boolean {
+    suspend fun toggleLockerState(token: String): Boolean {
         errorMessage = null
 
         if (token.isBlank()) {
@@ -24,7 +25,7 @@ class LockingActionService(private val client: HttpClient) {
         }
 
         return try {
-            // Step 1: Get user information to get lockerId
+            // Step 1: Get locker info
             val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
                 headers {
                     append("Authorization", "Bearer $token")
@@ -32,33 +33,43 @@ class LockingActionService(private val client: HttpClient) {
             }
 
             if (response.status != HttpStatusCode.OK) {
-                errorMessage = "Failed to retrieve user info."
+                errorMessage = "Failed to retrieve user info. Status: ${response.status}"
                 return false
             }
 
-            val user = response.body<LockingAction>()
-            lockerId = user.id // Extract lockerId from user info
+            val lockers: List<LockingAction> = Json { ignoreUnknownKeys = true }
+                .decodeFromString(response.body())
 
-            // Step 2: Send POST request to lock/unlock the locker
-            val lockingAction = LockingAction(id = lockerId!!, isLocked = isLocked)
+            val locker = lockers.firstOrNull()
+            if (locker == null) {
+                errorMessage = "No locker found for the given token."
+                return false
+            }
+
+            lockerId = locker.id
+            val newLockState = !locker.isLocked  // Toggle the current state
+
+            // Step 2: Send updated lock state
             val lockResponse: HttpResponse = client.post("http://192.168.8.132:8080/locker/lockers/lock") {
                 headers {
                     append("Authorization", "Bearer $token")
+                    append("Content-Type", "application/json")
                 }
-                setBody(lockingAction)
+                setBody(Json.encodeToString(LockingAction.serializer(), LockingAction(id = lockerId!!, isLocked = newLockState)))
             }
 
             if (lockResponse.status == HttpStatusCode.OK) {
-                true // Lock/unlock success
+                true  // Successfully toggled
             } else {
-                errorMessage = "Failed to lock/unlock the locker"
+                errorMessage = "Failed to change locker state. Status: ${lockResponse.status}"
                 false
             }
         } catch (e: Exception) {
-            errorMessage = "Error during lock/unlock action: ${e.message}"
+            errorMessage = "Error changing locker state: ${e.localizedMessage}"
             false
         }
     }
 
-    fun getErrorMessage(): String? = errorMessage
+fun getErrorMessage(): String? = errorMessage
 }
+

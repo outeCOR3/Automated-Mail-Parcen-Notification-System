@@ -61,11 +61,12 @@ fun AdminLandingPage(
 
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.68.138:8080/users/me") {
+            val response: HttpResponse = client.get("http://192.168.8.132:8080/users/me") {
                 header("Authorization", "Bearer $token")
             }
             if (response.status == io.ktor.http.HttpStatusCode.OK) {
-                val user = Json.decodeFromString<UsersDTO>(response.body())
+                val user = Json { ignoreUnknownKeys = true }.decodeFromString<UsersDTO>(response.body())
+
                 adminUsername = user.username
             } else {
                 adminUsername = "Error: ${response.status}"

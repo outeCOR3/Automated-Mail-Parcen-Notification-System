@@ -12,7 +12,7 @@ import org.example.project.model.RegisterUserRequest
 class CreateUserService(private val client: HttpClient) {
     var errorMessage: String? = null
 
-    suspend fun register( email: String, password: String, username: String): Boolean {
+    suspend fun register(email: String, password: String, username: String): Boolean {
         errorMessage = null
 
         return try {
