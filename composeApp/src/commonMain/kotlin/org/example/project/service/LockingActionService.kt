@@ -12,7 +12,7 @@ import org.example.project.model.LockingAction
 
 
 class LockingActionService(private val client: HttpClient) {
-    var errorMessage: String? = null
+    private var errorMessage: String? = null
     private var lockerId: Int? = null
 
     suspend fun lockUnlockLocker(token: String, isLocked: Boolean): Boolean {
@@ -25,7 +25,7 @@ class LockingActionService(private val client: HttpClient) {
 
         return try {
             // Step 1: Get user information to get lockerId
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/me") {
+            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
                 headers {
                     append("Authorization", "Bearer $token")
                 }
@@ -41,7 +41,7 @@ class LockingActionService(private val client: HttpClient) {
 
             // Step 2: Send POST request to lock/unlock the locker
             val lockingAction = LockingAction(id = lockerId!!, isLocked = isLocked)
-            val lockResponse: HttpResponse = client.post("http://192.168.8.132:8080/lockers/lock") {
+            val lockResponse: HttpResponse = client.post("http://192.168.8.132:8080/locker/lockers/lock") {
                 headers {
                     append("Authorization", "Bearer $token")
                 }

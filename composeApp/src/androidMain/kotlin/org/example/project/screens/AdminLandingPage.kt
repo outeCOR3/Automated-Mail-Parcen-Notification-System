@@ -77,7 +77,7 @@ fun AdminLandingPage(
 
     if (showCreateUser) {
         CreateUserScreen(
-            onCreateUser = { id,username, email, password   -> showCreateUser = false },
+            onCreateUser = {username, email, password   -> showCreateUser = false },
             onCancel = { showCreateUser = false },
             client = client
         )

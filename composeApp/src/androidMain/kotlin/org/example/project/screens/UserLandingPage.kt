@@ -23,7 +23,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
 import org.example.project.model.UsersDTO
-import org.example.project.service.LockingActionService
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +99,7 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
             ) {
                 when (selectedItem) {
                     0 -> Text(text = "Hello, ${username ?: "Loading..."}!", fontSize = 24.sp)
-                    1 -> LockingAction(token) // Pass token to LockingAction
+                    1 -> LockingAction(token = token ,client = client) // Pass token to LockingAction
                 }
             }
         }

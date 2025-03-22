@@ -30,7 +30,7 @@ data class LoginResponse(val token: String, val role: String)
 
 
 @Serializable
-data class RegisterUserRequest(val id: Int, val email: String, val password: String,val username: String, val roles: Roles = Roles.User) {
+data class RegisterUserRequest(val email: String, val password: String,val username: String, val roles: Roles = Roles.User) {
 
 
 }

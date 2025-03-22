@@ -37,12 +37,13 @@ import org.example.project.service.CreateUserService
 
 @Composable
 fun CreateUserScreen(
-    onCreateUser: (id:Int,username: String, email: String, password: String) -> Unit,
+    onCreateUser: (username: String, email: String, password: String) -> Unit,
     onCancel: () -> Unit = {},
     client: HttpClient
 ) {
-    val id by remember { mutableStateOf("") }
+
     var username by remember { mutableStateOf("") }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -145,9 +146,9 @@ fun CreateUserScreen(
                 onClick = {
                     if (username.isNotBlank() && email.isNotBlank() && password == confirmPassword && password.length >= 6) {
                         scope.launch {
-                            val result = createUserService.register(id,email, password,username)
+                            val result = createUserService.register(email, password,username)
                             if (result) {
-                                onCreateUser(id,email, password,username)
+                                onCreateUser(email, password,username)
                             } else {
                                 errorMessage = createUserService.errorMessage ?: "Unknown error"
                             }

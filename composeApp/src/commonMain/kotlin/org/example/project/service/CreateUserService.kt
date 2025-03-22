@@ -12,11 +12,11 @@ import org.example.project.model.RegisterUserRequest
 class CreateUserService(private val client: HttpClient) {
     var errorMessage: String? = null
 
-    suspend fun register(id:Int,email: String, password: String, username: String): Boolean {
+    suspend fun register( email: String, password: String, username: String): Boolean {
         errorMessage = null
 
         return try {
-            val registerRequest = RegisterUserRequest(id,email, password,username )
+            val registerRequest = RegisterUserRequest(email, password,username )
             /*val serverIp = getLocalIpAddress()*/
             val response: HttpResponse = client.post("http://192.168.8.132:8080/auth/register") {
                 contentType(io.ktor.http.ContentType.Application.Json)
