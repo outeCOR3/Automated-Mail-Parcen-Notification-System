@@ -11,5 +11,6 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 data class NotificationDTO(
     val message: String,
     val userId: Int, // Use custom serializer
-    val createdAt: Instant
+    val createdAt: String,
+    val createdAtFormatted: String = ""
 )

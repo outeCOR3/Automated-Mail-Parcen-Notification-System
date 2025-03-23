@@ -49,7 +49,7 @@ fun NotificationScreenUser(client: HttpClient, token: String) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Notifications for User: ${userId ?: ""}",
+            text = "Notifications: ",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -100,7 +100,7 @@ fun NotificationScreenUser(client: HttpClient, token: String) {
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "Received at: ${notification.createdAt}",
+                                    text = "Received at: ${notification.createdAtFormatted}",
                                     fontSize = 14.sp,
                                     color = Color.Gray
                                 )

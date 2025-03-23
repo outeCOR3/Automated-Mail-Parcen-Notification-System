@@ -2,6 +2,8 @@ package org.example.project.model
 
 import NotificationDTO
 import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere
@@ -12,6 +14,7 @@ import org.jetbrains.exposed.sql.update
 import java.time.LocalDateTime
 import java.time.Instant as JavaInstant
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 class NotificationRepository(private val userRepository: UserRepository) {
@@ -23,14 +26,29 @@ class NotificationRepository(private val userRepository: UserRepository) {
         val createdAtInstant = row[Notification.createdAt] // Get timestamp from DB
         val userId = row[Notification.userId]
 
-        // Convert `java.time.Instant` (DB) to `kotlinx.datetime.Instant`
+        // Convert Java Instant to kotlinx.datetime.Instant
         val kotlinxCreatedAt = Instant.fromEpochMilliseconds(createdAtInstant.toEpochMilli())
+
+        // ✅ Convert to String without T and Z
+        val cleanCreatedAt = kotlinxCreatedAt.toLocalDateTime(TimeZone.currentSystemDefault()).toString()
+
+        // ✅ Format human-readable timestamp
+        val formattedCreatedAt = formatInstant(createdAtInstant)
 
         return NotificationDTO(
             message = message,
-            createdAt = kotlinxCreatedAt,  // Use correctly converted Instant
-            userId = userId
+            userId = userId,
+            createdAt = cleanCreatedAt,  // No more T and Z!
+            createdAtFormatted = formattedCreatedAt
         )
+    }
+
+
+    // Convert Java Instant to LocalDateTime and format it
+    private fun formatInstant(instant: JavaInstant): String {
+        val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Manila"))
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy - hh:mm a") // Example: "Mar 23, 2025 - 08:30 AM"
+        return localDateTime.format(formatter)
     }
 
     // Get all notifications
