@@ -86,12 +86,12 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF42A5F5))
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         },
         bottomBar = {
             NavigationBar(
-                modifier = Modifier.height(50.dp),containerColor = Color(0xFF42A5F5)) {
+                modifier = Modifier.height(50.dp),containerColor = Color.White) {
 
                 val items = listOf("Home", "Lock", "Notifications")
                 val icons = listOf(Icons.Default.Home, Icons.Default.Lock, Icons.Default.Notifications)
