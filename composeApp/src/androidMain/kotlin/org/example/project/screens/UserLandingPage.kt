@@ -14,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -51,7 +53,20 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = username ?: "Loading...", fontSize = 18.sp) },
+                modifier = Modifier.height(48.dp),
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = username ?: "Loading...",
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                        },
+
                 actions = {
                     IconButton(onClick = { showMenu = !showMenu }) {
                         Icon(Icons.Default.Menu, contentDescription = "Menu")
@@ -75,14 +90,18 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
             )
         },
         bottomBar = {
-            NavigationBar(containerColor = Color(0xFF42A5F5)) {
+            NavigationBar(
+                modifier = Modifier.height(50.dp),containerColor = Color(0xFF42A5F5)) {
+
                 val items = listOf("Home", "Lock", "Notifications")
                 val icons = listOf(Icons.Default.Home, Icons.Default.Lock, Icons.Default.Notifications)
 
                 items.forEachIndexed { index, item ->
                     NavigationBarItem(
-                        icon = { Icon(icons[index], contentDescription = item) },
-                        label = { Text(item) },
+                        icon = { Icon(icons[index], contentDescription = item,modifier = Modifier
+                             // Reduce icon size
+                            .padding(bottom = 1.dp)) },
+
                         selected = selectedItem == index,
                         onClick = { selectedItem = index }
                     )

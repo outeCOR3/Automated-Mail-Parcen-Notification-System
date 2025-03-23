@@ -19,7 +19,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-fun formatInstantForResponse(instant: Instant): String {
+fun formatInstantForResponses(instant: Instant): String {
     val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Manila"))
     val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy - hh:mm a") // Example: "Mar 17, 2025 - 08:30 PM"
     return localDateTime.format(formatter)
@@ -53,7 +53,7 @@ fun Route.lockerParcelRoutes(lockerRepository: LockerRepository) {
                 }
 
                 val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
-                val formattedTime = formatInstantForResponse(phTime) // Convert to readable format
+                val formattedTime = formatInstantForResponses(phTime) // Convert to readable format
 
                 // Insert Parcel
                 val parcelInsert = Parcel.insert {

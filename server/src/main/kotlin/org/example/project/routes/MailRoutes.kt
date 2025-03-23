@@ -14,8 +14,17 @@ import org.example.project.model.Notification
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
+
+// Function to format `Instant` into a readable string
+fun formatInstantForResponse(instant: Instant): String {
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Manila"))
+    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy - hh:mm a") // Example: "Mar 17, 2025 - 08:30 PM"
+    return localDateTime.format(formatter)
+}
 
 fun Route.mailRoutes(lockerRepository: LockerRepository) {
     post("/lockers/mail/{lockerId}") {
@@ -33,6 +42,7 @@ fun Route.mailRoutes(lockerRepository: LockerRepository) {
                 }
 
                 val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
+                val formattedTime = formatInstantForResponse(phTime) // Convert to readable format
 
                 // Insert Mail
                 val mailInsert = Mail.insert {
@@ -47,11 +57,11 @@ fun Route.mailRoutes(lockerRepository: LockerRepository) {
                     it[itemType] = "MAIL"
                 }
 
-                // Insert Notification
+                // ✅ Insert Notification with formatted date
                 Notification.insert {
                     it[userId] = locker.userId // Get userId from the locker
-                    it[message] = "New mail added to your locker (ID: $lockerId) at $phTime"
-                    it[createdAt] = phTime
+                    it[message] = "📩 New mail added to your locker (ID: $lockerId) at $formattedTime"
+                    it[createdAt] = phTime // Still store Instant in DB
                 }
 
                 val mail = Mails(id = mailId)
