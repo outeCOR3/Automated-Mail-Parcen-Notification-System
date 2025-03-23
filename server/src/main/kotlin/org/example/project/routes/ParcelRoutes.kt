@@ -15,6 +15,15 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.ZoneId
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+
+fun formatInstantForResponse(instant: Instant): String {
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.of("Asia/Manila"))
+    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy - hh:mm a") // Example: "Mar 17, 2025 - 08:30 PM"
+    return localDateTime.format(formatter)
+}
 
 fun Route.lockerParcelRoutes(lockerRepository: LockerRepository) {
     post("/lockers/parcel/{lockerId}") {
@@ -44,6 +53,7 @@ fun Route.lockerParcelRoutes(lockerRepository: LockerRepository) {
                 }
 
                 val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
+                val formattedTime = formatInstantForResponse(phTime) // Convert to readable format
 
                 // Insert Parcel
                 val parcelInsert = Parcel.insert {
@@ -60,11 +70,11 @@ fun Route.lockerParcelRoutes(lockerRepository: LockerRepository) {
                     it[itemType] = "PARCEL"
                 }
 
-                // Insert Notification
+                // ✅ Insert Notification with formatted date
                 Notification.insert {
                     it[userId] = locker.userId // Get userId from the locker
-                    it[message] = "New parcel (Tracking: ${parcelData.trackingNumber}) added to your locker (ID: $lockerId) at $phTime"
-                    it[createdAt] = phTime
+                    it[message] = "📦 New parcel (Tracking: ${parcelData.trackingNumber}) added to your locker (ID: $lockerId) at $formattedTime"
+                    it[createdAt] = phTime // Still store `Instant` in DB
                 }
 
                 val parcel = Parcels(id = parcelId, trackingNumber = parcelData.trackingNumber, imageUrl = parcelData.imageUrl)

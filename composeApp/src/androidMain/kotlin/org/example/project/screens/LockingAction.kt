@@ -27,7 +27,7 @@ import org.example.project.service.LockingActionService
 
 @Composable
 fun LockingAction(token: String, client: HttpClient) {
-    val lockingService = remember { LockingActionService(client) }
+    val lockingService = LockingActionService(client)
     val coroutineScope = rememberCoroutineScope()
 
     var isLocked by rememberSaveable { mutableStateOf<Boolean?>(null) }

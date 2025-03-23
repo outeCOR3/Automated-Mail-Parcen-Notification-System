@@ -51,7 +51,8 @@ fun CreateUserScreen(
     var errorMessage by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
 
-    val createUserService = remember { CreateUserService(client) }
+    val createUserService = CreateUserService(client) // Remove remember
+
 
     Column(
         modifier = Modifier

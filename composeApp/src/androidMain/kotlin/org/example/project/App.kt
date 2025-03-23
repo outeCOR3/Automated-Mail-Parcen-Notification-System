@@ -51,7 +51,8 @@ fun App(client: HttpClient) {
     var loggedInRole by remember { mutableStateOf<String?>(null) }
     var loggedInToken by remember { mutableStateOf<String?>(null) } // Store token
     val scope = rememberCoroutineScope()
-    val loginService = remember { LoginService(client) }
+    val loginServiceInstance = LoginService(client)
+    val loginService = remember { loginServiceInstance }
 
     when {
         loggedInRole == "User" -> loggedInToken?.let {

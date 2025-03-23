@@ -31,6 +31,7 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
 import org.example.project.model.LockerRepository
+import org.example.project.model.NotificationRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
 import org.example.project.model.Users
@@ -81,6 +82,7 @@ fun Application.module() {
     DatabaseFactory.init()
     val userRepository = UserRepository()
     val lockerRepository = LockerRepository(userRepository)
+    val notificationRepository = NotificationRepository(userRepository)
 
     routing {
         get("/") {
@@ -94,7 +96,7 @@ fun Application.module() {
         authenticate("jwt-auth") {
             route("/locker") {
                 requireRole("User") {
-                    lockerRoutes(lockerRepository,userRepository)
+                    lockerRoutes(lockerRepository,userRepository,notificationRepository)
                     lockerLockingRoutes(lockerRepository)
                     mailRoutes(lockerRepository)
                     lockerParcelRoutes(lockerRepository)
@@ -114,7 +116,7 @@ fun Application.module() {
         }
 
         authenticate("jwt-auth") {
-            lockerRoutes(lockerRepository,userRepository)
+            lockerRoutes(lockerRepository,userRepository,notificationRepository)
             route("/users") {
                     get("/me") {
                     val principal = call.principal<JWTPrincipal>()

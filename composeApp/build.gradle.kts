@@ -37,7 +37,7 @@ kotlin {
         
         androidMain.dependencies {
 
-
+            implementation(libs.kotlinx.datetime.v040)
             implementation (libs.androidx.ui)
             implementation (libs.material)
             implementation (libs.androidx.ui.tooling.preview)
@@ -59,6 +59,7 @@ kotlin {
         }
         commonMain.dependencies {
              // This line to add the firebase bom
+            implementation(libs.java.jwt)
             implementation(project(":shared"))
             implementation(libs.ktor.client.cio.v236)
             implementation(projects.shared)
@@ -102,7 +103,9 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+
         }
+
     }
     buildTypes {
         getByName("release") {
@@ -122,6 +125,7 @@ dependencies {
     implementation(libs.androidx.foundation.android)
     implementation(libs.androidx.lifecycle.viewmodel.android)
     debugImplementation(compose.uiTooling)
+
 }
 
 compose.desktop {
