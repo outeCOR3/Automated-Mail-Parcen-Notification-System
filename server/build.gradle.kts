@@ -18,8 +18,7 @@ dependencies {
     implementation(libs.jbcrypt)
     implementation(libs.kotlinx.serialization.json.v163)
     implementation(libs.exposed.java.time.v0440)
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.netty)
+
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.exposed.core)
@@ -33,8 +32,9 @@ dependencies {
     implementation(libs.ktor.server.auth.jwt)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
+    implementation(project(":shared"))
     testImplementation(libs.ktor.server.tests)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.datetime)
     implementation(libs.ktor.serialization.kotlinx.json.v238)
     implementation(libs.hikari)
     implementation(libs.ktor.client.serialization)
@@ -44,4 +44,14 @@ dependencies {
 
 
     testImplementation(libs.kotlin.test.junit)
+}
+tasks.withType<Copy>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+tasks.withType<Tar>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.withType<Zip>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

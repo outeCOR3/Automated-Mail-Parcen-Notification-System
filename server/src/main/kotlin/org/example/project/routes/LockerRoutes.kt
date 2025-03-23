@@ -11,11 +11,24 @@ import io.ktor.server.routing.delete
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
+import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
+import kotlinx.serialization.Serializable
+
+
 import org.example.project.model.LockerRepository
 import org.example.project.model.Lockers
+import org.example.project.model.Notification
+
+import org.example.project.model.NotificationRepository
+
 import org.example.project.model.UserRepository
 
-fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRepository) {
+import org.jetbrains.exposed.sql.transactions.transaction
+
+
+
+fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRepository,notificationRepository: NotificationRepository) {
 
     // Get all lockers
     get("/lockers") {
@@ -42,7 +55,8 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRe
             return@get
         }
 
-        // Find the user based on the email
+        // Find the user ba
+        // sed on the email
         val user = userRepository.getUserByEmail(email)
         if (user == null) {
             call.respond(HttpStatusCode.NotFound, "User not found")
@@ -59,6 +73,49 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRe
             call.respond(HttpStatusCode.NotFound, "No lockers found for user ID: $userId")
         }
     }
+
+
+    get("/notifications/{userId}") {
+        // Retrieve userId from the route parameters
+        val userId = call.parameters["userId"]?.toIntOrNull()
+
+        // Log userId for debugging
+        println("User ID from route: $userId")
+
+        if (userId == null) {
+            call.respond(HttpStatusCode.BadRequest, "Invalid user ID")
+            return@get
+        }
+
+        try {
+            // Get user based on the userId
+            val user = userRepository.getUserById(userId)
+            if (user == null) {
+                call.respond(HttpStatusCode.NotFound, "User not found")
+                return@get
+            }
+
+            // Get notifications for the user by userId
+            val notifications = notificationRepository.getNotificationsByUserId(userId)
+
+            // Log notifications for debugging
+            println("Notifications for user ID $userId: $notifications")
+
+            if (notifications.isEmpty()) {
+                call.respond(HttpStatusCode.NoContent, "No notifications found for user.")
+            } else {
+                call.respond(HttpStatusCode.OK, notifications)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()  // Print stack trace for detailed error debugging
+            println("Error occurred: ${e.message}")
+            call.respond(HttpStatusCode.InternalServerError, "An error occurred: ${e.message}")
+        }
+    }
+
+
+
+
 
 
 
@@ -98,6 +155,7 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRe
             call.respond(HttpStatusCode.BadRequest, "Invalid request body")
         }
     }
+
 
     // Delete a locker by ID
     delete("/lockers/{id}") {

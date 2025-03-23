@@ -99,7 +99,8 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
             ) {
                 when (selectedItem) {
                     0 -> Text(text = "Hello, ${username ?: "Loading..."}!", fontSize = 24.sp)
-                    1 -> LockingAction(token = token ,client = client) // Pass token to LockingAction
+                    1 -> LockingAction(token = token, client = client)
+                    2 -> NotificationScreenUser(token = token, client = client) // Now fetches locker ID dynamically
                 }
             }
         }

@@ -36,7 +36,7 @@ kotlin {
                 implementation(libs.ktor.client.core.v230)  // Ktor core
                 implementation(libs.ktor.client.cio.v230)   // Ktor CIO engine
                 implementation(libs.ktor.client.json)   // Ktor JSON serialization
-
+                implementation(libs.kotlinx.datetime)
 
 
 

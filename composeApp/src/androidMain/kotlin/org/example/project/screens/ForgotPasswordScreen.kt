@@ -48,7 +48,7 @@ fun ForgotPasswordScreen(
     var errorMessage by remember { mutableStateOf("") }
     var resetSuccess by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val forgotPasswordService = remember { ForgotPasswordService(client) }
+    val forgotPasswordService =   ForgotPasswordService(client)
 
     Column(
         modifier = Modifier

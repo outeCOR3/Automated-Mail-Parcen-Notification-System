@@ -51,7 +51,6 @@ class LockerRepository(private val userRepository: UserRepository) {
         val phTime = Instant.now().atZone(ZoneId.of("Asia/Manila")).toInstant()
         Locker.insert {
             it[Locker.isLocked] = isLocked
-
             it[user_id] = userId
             it[createdAt] = phTime
         }
