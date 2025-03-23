@@ -5,7 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -35,6 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -86,12 +93,29 @@ fun AdminLandingPage(
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("LANDLORD - ${adminUsername ?: "Loading..."}", color = Color.White) },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color(0xFF42A5F5)),
+                    modifier = Modifier.height(50.dp),
+                    title = {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth() // Ensure Row takes full width
+                                .fillMaxHeight(), // Ensure full height
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start // Align text to the left
+                        ) {
+                            Text(
+                                text = "LANDLORD - ${adminUsername ?: "Loading..."}",
+                                color = Color.Black,
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(start = 16.dp) // Add left padding for spacing
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White),
                     actions = {
                         Box {
                             IconButton(onClick = { menuExpanded = true }) {
-                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+                                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.Black )
                             }
                             DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                                 DropdownMenuItem(
@@ -116,14 +140,15 @@ fun AdminLandingPage(
                 )
             },
             bottomBar = {
-                NavigationBar(containerColor = Color(0xFF42A5F5)) {
+                NavigationBar(modifier = Modifier.height(50.dp),containerColor = Color.White) {
                     val items = listOf("Home", "Lock", "Notifications")
                     val icons = listOf(Icons.Default.Home, Icons.Default.Lock, Icons.Default.Notifications)
 
                     items.forEachIndexed { index, item ->
                         NavigationBarItem(
-                            icon = { Icon(icons[index], contentDescription = item) },
-                            label = { Text(item) },
+                            icon = { Icon(icons[index], contentDescription = item,modifier = Modifier
+                                // Reduce icon size
+                                .padding(bottom = 1.dp)) },
                             selected = selectedItem == index,
                             onClick = { selectedItem = index }
                         )

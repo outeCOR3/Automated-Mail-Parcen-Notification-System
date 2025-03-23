@@ -53,7 +53,7 @@ fun UserLandingPage(client: HttpClient, token: String,onBackToLogin: () -> Unit)
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(48.dp),
+                modifier = Modifier.height(50.dp),
                 title = {
                     Row(
                         modifier = Modifier.fillMaxHeight(),

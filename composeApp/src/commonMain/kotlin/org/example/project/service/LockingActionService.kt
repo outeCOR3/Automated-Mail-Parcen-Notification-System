@@ -30,9 +30,11 @@ class LockingActionService(private val client: HttpClient) {
                     append("Authorization", "Bearer $token")
                 }
             }
+            val responseBody = response.body<String>()
+            println("Locker API Response: $responseBody")
 
             if (response.status != HttpStatusCode.OK) {
-                errorMessage = "Failed to retrieve locker state. Status: ${response.status}"
+                errorMessage = "No Locker Assigned"
                 return null
             }
 
@@ -45,12 +47,16 @@ class LockingActionService(private val client: HttpClient) {
                 return null
             }
 
+
             lockerId = locker.id
             locker.isLocked // Return the current locker state
+
         } catch (e: Exception) {
             errorMessage = "Error retrieving locker state: ${e.localizedMessage}"
             null
+
         }
+
     }
 
     suspend fun toggleLockerState(token: String): Boolean {

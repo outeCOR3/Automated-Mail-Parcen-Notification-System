@@ -7,7 +7,7 @@ import java.util.Date
 object JwtConfig {
     private const val secret = "my_secret_key"
     const val issuer = "my_ktor_app"
-    private const val validityInMs = 3_600_000 // 1 hour (add multiplication to add hours)
+    private const val validityInMs = 3_600_000 * 10// 1 hour (add multiplication to add hours)
 
     val algorithm = Algorithm.HMAC256(secret)
 
