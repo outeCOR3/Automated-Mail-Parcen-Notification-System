@@ -15,3 +15,9 @@ data class Lockers(
     val isLocked: Boolean,
     )
 
+
+@Serializable
+data class LockerStatus(
+    val lockerId: Int,
+    val status: String // "Locked" or "Unlocked"
+)

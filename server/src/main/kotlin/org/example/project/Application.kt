@@ -148,6 +148,22 @@ fun Application.module() {
                             )
                         }
                     }
+                    route("/lockerAll") {
+                        get {
+                            val lockers = lockerRepository.getAllLockers()
+                            if (lockers.isNotEmpty()) {
+                                call.respond(HttpStatusCode.OK, lockers)
+                            } else {
+                                call.respond(HttpStatusCode.NoContent, "No lockers found")
+                            }
+                        }
+
+                        get("/status") {
+                            val statuses = lockerRepository.getAllLockersStatus()
+                            call.respond(HttpStatusCode.OK, statuses)
+                        }
+                    }
+
                     post("/lockers") {
                         try {
                             val lockerData = call.receive<Lockers>()
@@ -163,6 +179,7 @@ fun Application.module() {
                             call.respond(HttpStatusCode.BadRequest, "Invalid request body")
                         }
                     }
+
 
                     get("/{email}") {
                         val email = call.parameters["email"] ?: return@get call.respond(HttpStatusCode.BadRequest)

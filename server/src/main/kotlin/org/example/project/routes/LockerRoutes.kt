@@ -31,17 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRepository,notificationRepository: NotificationRepository) {
 
     // Get all lockers
-    get("/lockers") {
-        val lockers = lockerRepository.getAllLockers()
 
-        println("✅ Retrieved lockers: $lockers") // Debugging output
-
-        if (lockers.isNotEmpty()) {
-            call.respond(HttpStatusCode.OK, lockers)
-        } else {
-            call.respond(HttpStatusCode.NoContent, "No lockers found")
-        }
-    }
     get("/me") {
         val principal = call.principal<JWTPrincipal>()
         println("principal: $principal")

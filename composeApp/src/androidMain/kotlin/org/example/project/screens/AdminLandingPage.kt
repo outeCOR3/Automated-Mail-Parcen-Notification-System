@@ -173,7 +173,7 @@ fun AdminLandingPage(
                 ) {
                     when (selectedItem) {
                         0 -> onNavigateToHome()
-                        1 -> onNavigateToLock()
+                        1 -> LockerListScreen(token =token,client = client)
                         2 -> onNavigateToNotifications()
                         3 -> UserListScreen(token = token, client = client)
                     }
