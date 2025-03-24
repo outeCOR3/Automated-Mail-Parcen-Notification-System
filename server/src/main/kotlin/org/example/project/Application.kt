@@ -31,6 +31,7 @@ import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
 import org.example.project.model.LockerRepository
+import org.example.project.model.Lockers
 import org.example.project.model.NotificationRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
@@ -144,6 +145,21 @@ fun Application.module() {
                                 HttpStatusCode.InternalServerError,
                                 mapOf("error" to "Failed to retrieve users: ${e.message}")
                             )
+                        }
+                    }
+                    post("/lockers") {
+                        try {
+                            val lockerData = call.receive<Lockers>()
+                            val isAdded = lockerRepository.addLocker(lockerData.userId, lockerData.isLocked)
+
+                            if (isAdded) {
+                                call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: ${lockerData.userId}")
+                            } else {
+                                call.respond(HttpStatusCode.Conflict, "Could not add locker: User not found or locker already exists.")
+                            }
+                        } catch (e: Exception) {
+                            println("Error parsing request: ${e.message}")
+                            call.respond(HttpStatusCode.BadRequest, "Invalid request body")
                         }
                     }
 
