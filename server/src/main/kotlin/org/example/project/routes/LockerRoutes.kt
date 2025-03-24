@@ -31,17 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRepository,notificationRepository: NotificationRepository) {
 
     // Get all lockers
-    get("/lockers") {
-        val lockers = lockerRepository.getAllLockers()
 
-        println("✅ Retrieved lockers: $lockers") // Debugging output
-
-        if (lockers.isNotEmpty()) {
-            call.respond(HttpStatusCode.OK, lockers)
-        } else {
-            call.respond(HttpStatusCode.NoContent, "No lockers found")
-        }
-    }
     get("/me") {
         val principal = call.principal<JWTPrincipal>()
         println("principal: $principal")
@@ -146,53 +136,22 @@ fun Route.lockerRoutes(lockerRepository: LockerRepository,userRepository: UserRe
             val isAdded = lockerRepository.addLocker(lockerData.userId, lockerData.isLocked)
 
             if (isAdded) {
-                call.respond(HttpStatusCode.Created, "Locker added successfully for user ID: ${lockerData.userId}")
+                call.respond(
+                    HttpStatusCode.Created,
+                    "Locker added successfully for user ID: ${lockerData.userId}"
+                )
             } else {
-                call.respond(HttpStatusCode.Conflict, "Could not add locker: User not found or locker already exists.")
+                call.respond(
+                    HttpStatusCode.Conflict,
+                    "Could not add locker: User not found or locker already exists."
+                )
             }
         } catch (e: Exception) {
             println("Error parsing request: ${e.message}")
             call.respond(HttpStatusCode.BadRequest, "Invalid request body")
         }
     }
+}
 
 
     // Delete a locker by ID
-    delete("/lockers/{id}") {
-        val id = call.parameters["id"]?.toIntOrNull()
-        if (id == null) {
-            call.respond(HttpStatusCode.BadRequest, "Valid locker ID is required")
-            return@delete
-        }
-
-        val isDeleted = lockerRepository.deleteLocker(id)
-        if (isDeleted) {
-            call.respond(HttpStatusCode.OK, "Locker deleted successfully")
-        } else {
-            call.respond(HttpStatusCode.NotFound, "Locker not found")
-        }
-    }
-
-    // Update a locker (change user ID)
-    put("/lockers/{lockerId}") {
-        val lockerId = call.parameters["lockerId"]?.toIntOrNull()
-        val updateData = call.receive<Map<String, String>>()
-        val newUserId = updateData["user_id"]?.toIntOrNull()
-
-        if (lockerId == null || newUserId == null) {
-            call.respond(HttpStatusCode.BadRequest, "Valid locker ID and new user ID are required")
-            return@put
-        }
-
-        val isUpdated = lockerRepository.updateLocker(lockerId, newUserId)
-
-        if (isUpdated) {
-            call.respond(HttpStatusCode.OK, "Locker updated successfully for locker_id: $lockerId")
-        } else {
-            call.respond(
-                HttpStatusCode.Conflict,
-                "Failed to update locker. User might already have a locker or data is incorrect."
-            )
-        }
-    }
-}
