@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.painterResource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -18,15 +19,16 @@ import io.ktor.client.request.header
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.json.Json
-import org.example.project.model.Lockers
 import org.example.project.model.UsersDTO
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.MoreVert
 
 @Composable
 fun UserListScreen(client: HttpClient, token: String) {
     val users = remember { mutableStateOf<List<UsersDTO>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-    var isLocked by remember { mutableStateOf(true) }
-    var lockers by remember { mutableStateOf<Lockers?>(null) }
+
     LaunchedEffect(Unit) {
         try {
             val response: HttpResponse = client.get("http://192.168.8.132:8080/users/role/User") {
@@ -80,17 +82,11 @@ fun UserListScreen(client: HttpClient, token: String) {
                             text = "User List",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF78C2D1),
+                            color = Color.Black,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
-                    itemsIndexed(users.value) { index, user ->
-                        Text(
-                            text = "TENANT ${index + 1}",
-                            fontSize = 14.sp,
-                            color = Color.Gray,
-                            modifier = Modifier.padding(8.dp)
-                        )
+                    itemsIndexed(users.value) { _, user ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -99,8 +95,32 @@ fun UserListScreen(client: HttpClient, token: String) {
                             backgroundColor = Color.White,
                             elevation = 4.dp
                         ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = user.username, fontSize = 16.sp, color = Color.Black)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = user.username,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+                                }
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = "Locker Status",
+                                    tint = Color.Gray
+                                )
+                                IconButton(onClick = { /* No function yet */ }) {
+                                    Icon(
+                                        imageVector = Icons.Default.MoreVert,
+                                        contentDescription = "More Options"
+                                    )
+                                }
                             }
                         }
                     }
