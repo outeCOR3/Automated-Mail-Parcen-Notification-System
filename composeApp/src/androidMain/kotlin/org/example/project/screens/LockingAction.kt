@@ -73,7 +73,7 @@ fun LockingAction(token: String, client: HttpClient) {
     )
 
     val lockColor by animateColorAsState(
-        targetValue = if (isLocked == true) Color(0xFF90CAF9) else Color(0xFFFFC107),
+        targetValue = if (isLocked == true) Color.Black else Color.White,
         animationSpec = tween(600),
         label = "Lock Color"
     )
