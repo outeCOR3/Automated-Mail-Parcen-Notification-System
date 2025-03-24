@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,12 +50,20 @@ fun NotificationScreenUser(client: HttpClient, token: String) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = "Notifications: ",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Notifications:",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(onClick = { /* Handle edit action */ }) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit Notifications")
+            }
+        }
 
         when {
             isLoading -> {
@@ -88,7 +98,7 @@ fun NotificationScreenUser(client: HttpClient, token: String) {
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp),
                             shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)), // Light blue background
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)),
                             elevation = CardDefaults.cardElevation(4.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
