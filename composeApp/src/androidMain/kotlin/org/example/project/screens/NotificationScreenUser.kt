@@ -23,7 +23,7 @@ import org.example.project.service.NotificationService
 @Composable
 fun NotificationScreenUser(client: HttpClient, token: String) {
     val scope = rememberCoroutineScope()
-    val notificationService = remember { NotificationService(client) }
+    val notificationService = NotificationService(client) // ✅ Fix applied
 
     var notifications by remember { mutableStateOf<List<NotificationDTO>>(emptyList()) }
     var userId by remember { mutableStateOf<Int?>(null) }
