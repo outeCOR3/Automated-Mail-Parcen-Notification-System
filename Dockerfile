@@ -12,6 +12,8 @@ COPY build.gradle.kts /app/
 COPY settings.gradle.kts /app/
 COPY gradle.properties /app/
 COPY server /app/server
+COPY shared /app/shared
+COPY composeApp /app/composeApp
 
 # Ensure gradlew is executable
 RUN chmod +x /app/gradlew

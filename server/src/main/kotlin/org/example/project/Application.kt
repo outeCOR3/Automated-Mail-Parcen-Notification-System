@@ -49,10 +49,11 @@ import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
-    embeddedServer(Netty, port = port, host = "0.0.0.0", module = Application::module)
-        .start(wait = true)
+    embeddedServer(Netty, port = port, host = "0.0.0.0") {
+        module()
+    }.start(wait = true)
 }
-fun Application.module() {
+    fun Application.module() {
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
