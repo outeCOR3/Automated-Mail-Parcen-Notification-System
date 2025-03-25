@@ -1,27 +1,35 @@
-FROM debian:latest
-
-# Install Java, Bash, and necessary tools
-RUN apt-get update && apt-get install -y openjdk-17-jdk bash unzip dos2unix
-
+# Stage 1: Build with Gradle (caches dependencies)
+FROM gradle:8-jdk17-alpine AS builder
 WORKDIR /app
 
-# Copy necessary files
-COPY gradlew /app/gradlew
-COPY gradle /app/gradle
-COPY build.gradle.kts /app/
-COPY settings.gradle.kts /app/
-COPY gradle.properties /app/
-COPY server /app/server
-COPY shared /app/shared
-COPY composeApp /app/composeApp
+# 1. Copy only files needed for dependency resolution (optimizes caching)
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY server/build.gradle.kts server/
+COPY shared/build.gradle.kts shared/
 
-# Ensure gradlew is executable
-RUN chmod +x /app/gradlew
+# 2. Download dependencies (cached unless build files change)
+RUN gradle --no-daemon dependencies
 
-# Convert gradlew to Unix format (Fixes Windows CRLF issue)
-RUN dos2unix /app/gradlew
+# 3. Copy source code
+COPY server/src server/src
+COPY shared/src shared/src
 
-# Debugging: Check if gradlew works
-RUN /bin/bash -c "/app/gradlew --version"
+# 4. Build the server fat JAR (using Shadow plugin)
+RUN gradle --no-daemon --build-cache :server:shadowJar
+
+# Stage 2: Minimal runtime image
+FROM eclipse-temurin:17-jre-jammy
+WORKDIR /app
+
+# Copy only the built JAR from the builder
+COPY --from=builder /app/server/build/libs/server-*.jar /app/server.jar
+
+# Healthcheck for Render (adjust path if needed)
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD curl -f http://localhost:8080/health || exit 1
+
 EXPOSE 8080
-CMD ["/bin/sh"]
+CMD ["java", "-jar", "server.jar"]
