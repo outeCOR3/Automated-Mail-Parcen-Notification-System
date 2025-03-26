@@ -1,14 +1,15 @@
-# Use OpenJDK 21 as base image
+# Use OpenJDK as base image
 FROM openjdk:21-jdk-slim
 
-# Set the working directory in the container
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file from the correct path
+# Copy the JAR file from the server/build/libs directory
 COPY server/build/libs/server-all.jar app.jar
 
-# Expose the application's port
+# Expose the port your application runs on
 EXPOSE 8080
 
-# Run the application
+# Command to run the application
 CMD ["java", "-jar", "app.jar"]
+gi
