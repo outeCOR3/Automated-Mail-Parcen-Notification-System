@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:17
+    container_name: ampns_db
+    restart: always
+    environment:
+      POSTGRES_DB: ampns
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: jennierubyjanekim
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: ampns_app
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: jdbc:postgresql://database:5432/ampns
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: jennierubyjanekim
+
+volumes:
+  postgres_data:
