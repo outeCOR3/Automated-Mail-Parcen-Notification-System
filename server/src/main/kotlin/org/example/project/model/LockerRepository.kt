@@ -94,7 +94,7 @@ class LockerRepository(private val userRepository: UserRepository) {
 
     fun getLockersByLockerId(lockerId: Int): List<Lockers> = transaction {
         Locker.selectAll()
-            .where { Locker.user_id eq lockerId }  // Ensure filtering by locker_id
+            .where { Locker.locker_id eq lockerId }  // Ensure filtering by locker_id
             .map(::resultRowToLocker)  // Convert ResultRow to Locker object
     }
     fun getAllLockersStatus(): List<Boolean> = transaction {

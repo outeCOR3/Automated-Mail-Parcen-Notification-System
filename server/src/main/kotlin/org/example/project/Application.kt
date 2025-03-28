@@ -150,6 +150,7 @@ fun main() {
                             )
                         }
                     }
+
                     route("/lockerAll") {
                         get {
                             val lockers = lockerRepository.getAllLockers()
@@ -165,28 +166,7 @@ fun main() {
                             call.respond(HttpStatusCode.OK, statuses)
                         }
                     }
-                    post("/lockers/lock") {
-                        val lockingAction = call.receive<LockingAction>()
 
-                        // Check if locker exists using locker_id
-                        val lockerExists = lockerRepository.getLockersByLockerId(lockingAction.id).isNotEmpty()
-                        if (!lockerExists) {
-                            call.respond(HttpStatusCode.NotFound, "Locker with ID ${lockingAction.id} not found")
-                            return@post
-                        }
-
-                        // Process lock/unlock action
-                        val isUpdated = lockerRepository.updateLockerLockState(
-                            lockerId = lockingAction.id,  // locker_id reference
-                            isLocked = lockingAction.isLocked
-                        )
-
-                        if (isUpdated) {
-                            call.respond(HttpStatusCode.OK, "Locker ${lockingAction.id} has been ${if (lockingAction.isLocked) "locked" else "unlocked"}.")
-                        } else {
-                            call.respond(HttpStatusCode.InternalServerError, "Failed to update locker status")
-                        }
-                    }
                     post("/lockers/lock") {
                         val lockingAction = call.receive<LockingAction>()
 
