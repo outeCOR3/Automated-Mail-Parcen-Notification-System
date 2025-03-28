@@ -36,7 +36,7 @@ fun Route.mailRoutes(lockerRepository: LockerRepository) {
 
         try {
             val result = transaction {
-                val locker = lockerRepository.getLockersById(lockerId).firstOrNull()
+                val locker = lockerRepository.getLockersByLockerId(lockerId).firstOrNull()
                 if (locker == null) {
                     return@transaction Pair(false, "Locker with ID $lockerId not found")
                 }

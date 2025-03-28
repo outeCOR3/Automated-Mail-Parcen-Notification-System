@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 
 object Notification : Table("notifications") {
     val id = integer("id").autoIncrement()
-    val userId = integer("user_id")
+    val userId = reference("user_id",Locker.user_id)
     val message = text("message")
     val createdAt = timestamp("createdAt")
 

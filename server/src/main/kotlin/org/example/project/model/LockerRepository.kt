@@ -30,10 +30,10 @@ class LockerRepository(private val userRepository: UserRepository) {
             .map(::resultRowToLocker)
     }
 
-        fun getLockersById(id: Int): List<Lockers?> = transaction {
-            Locker.selectAll() // Changed from Locker.select(Locker.id) to select all columns
-                .where { Locker.user_id eq id }
-                .map(::resultRowToLocker)
+    fun getLockersById(id: Int): List<Lockers?> = transaction {
+        Locker.selectAll() // Changed from Locker.select(Locker.id) to select all columns
+            .where { Locker.user_id eq id }
+            .map(::resultRowToLocker)
 
         }
 

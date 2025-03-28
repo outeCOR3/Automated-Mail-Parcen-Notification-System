@@ -49,7 +49,7 @@ fun AdminLandingPage(
 
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/users/me") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/users/me") {
                 header("Authorization", "Bearer $token")
             }
             if (response.status == io.ktor.http.HttpStatusCode.OK) {

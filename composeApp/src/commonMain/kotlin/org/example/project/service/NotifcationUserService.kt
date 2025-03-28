@@ -9,6 +9,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.example.project.model.Lockers
 
 import org.example.project.model.LockingAction
 
@@ -25,7 +26,7 @@ class NotificationService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/locker/me") {
                 headers {
                     append("Authorization", "Bearer $token")
                 }
@@ -37,10 +38,10 @@ class NotificationService(private val client: HttpClient) {
             }
 
             val json = response.body<String>()
-            val lockerList: List<LockingAction> = Json { ignoreUnknownKeys = true }
+            val lockerList: List<Lockers> = Json { ignoreUnknownKeys = true }
                 .decodeFromString(json)
 
-            userId = lockerList.firstOrNull()?.id
+            userId = lockerList.firstOrNull()?.userId
             true
         } catch (e: Exception) {
             errorMessage = "Error retrieving user ID: ${e.localizedMessage}"
@@ -55,7 +56,7 @@ class NotificationService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/notifications/$userId") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/locker/notifications/$userId") {
                 headers {
                     append("Authorization", "Bearer $token")
                     append("Accept", "application/json")
