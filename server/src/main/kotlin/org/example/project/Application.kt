@@ -49,11 +49,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
+
     embeddedServer(Netty, port = 8080, host = "172.20.10.14", module = Application::module)
         .start(wait = true)
-}
 
-fun Application.module() {
+}
+    fun Application.module() {
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true

@@ -31,11 +31,13 @@ class LockerRepository(private val userRepository: UserRepository) {
     }
 
     fun getLockersById(id: Int): List<Lockers?> = transaction {
+
         Locker.selectAll() // Changed from Locker.select(Locker.id) to select all columns
             .where { Locker.user_id eq id }
             .map(::resultRowToLocker)
 
-        }
+
+    }
 
     fun addLocker(userId: Int,isLocked: Boolean): Boolean = transaction {
         println("Checking if user with id: $userId exists...")
@@ -92,7 +94,7 @@ class LockerRepository(private val userRepository: UserRepository) {
 
     fun getLockersByLockerId(lockerId: Int): List<Lockers> = transaction {
         Locker.selectAll()
-            .where { Locker.locker_id eq lockerId }  // Ensure filtering by locker_id
+            .where { Locker.user_id eq lockerId }  // Ensure filtering by locker_id
             .map(::resultRowToLocker)  // Convert ResultRow to Locker object
     }
     fun getAllLockersStatus(): List<Boolean> = transaction {
