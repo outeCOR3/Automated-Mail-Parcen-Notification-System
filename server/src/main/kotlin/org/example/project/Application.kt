@@ -49,7 +49,7 @@ import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
-    embeddedServer(Netty, port = port, host = "0.0.0.0") {
+    embeddedServer(Netty, port = port, host = "172.20.10.14") {
         module()
     }.start(wait = true)
 }

@@ -31,7 +31,7 @@ fun LockerListScreen(token: String, client: HttpClient) {
     LaunchedEffect(Unit) {
         scope.launch {
             try {
-                val response: HttpResponse = client.get("http://192.168.8.132:8080/users/lockerAll/status") {
+                val response: HttpResponse = client.get("http://172.20.10.14:8080/users/lockerAll/status") {
                     header("Authorization", "Bearer $token")
                 }
                 if (response.status == HttpStatusCode.OK) {

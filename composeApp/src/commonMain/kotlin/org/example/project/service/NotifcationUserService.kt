@@ -25,7 +25,7 @@ class NotificationService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/locker/me") {
                 headers {
                     append("Authorization", "Bearer $token")
                 }
@@ -55,7 +55,7 @@ class NotificationService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/notifications/$userId") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/locker/notifications/$userId") {
                 headers {
                     append("Authorization", "Bearer $token")
                     append("Accept", "application/json")

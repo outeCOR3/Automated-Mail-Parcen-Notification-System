@@ -24,7 +24,7 @@ fun createHttpClient(): HttpClient {
         defaultRequest {
             url {
                 protocol = URLProtocol.HTTP
-                host = "192.168.8.132"
+                host = "172.20.10.14"
                 port = 8080
             }
         }

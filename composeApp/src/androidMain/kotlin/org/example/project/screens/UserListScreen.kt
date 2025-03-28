@@ -31,7 +31,7 @@ fun UserListScreen(client: HttpClient, token: String) {
 
     LaunchedEffect(Unit) {
         try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/users/role/User") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/users/role/User") {
                 header("Authorization", "Bearer $token")
             }
             println("UserList Response Status: ${response.status}")

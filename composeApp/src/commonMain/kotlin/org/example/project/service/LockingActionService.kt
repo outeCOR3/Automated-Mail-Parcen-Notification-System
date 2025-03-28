@@ -25,7 +25,7 @@ class LockingActionService(private val client: HttpClient) {
         }
 
         return try {
-            val response: HttpResponse = client.get("http://192.168.8.132:8080/locker/me") {
+            val response: HttpResponse = client.get("http://172.20.10.14:8080/locker/me") {
                 headers {
                     append("Authorization", "Bearer $token")
                 }
@@ -71,7 +71,7 @@ class LockingActionService(private val client: HttpClient) {
             val currentState = getLockerState(token) ?: return false // Fetch current state first
             val newLockState = !currentState  // Toggle the current state
 
-            val lockResponse: HttpResponse = client.post("http://192.168.8.132:8080/locker/lockers/lock") {
+            val lockResponse: HttpResponse = client.post("http://172.20.10.14:8080/locker/lockers/lock") {
                 headers {
                     append("Authorization", "Bearer $token")
                     append("Content-Type", "application/json")
