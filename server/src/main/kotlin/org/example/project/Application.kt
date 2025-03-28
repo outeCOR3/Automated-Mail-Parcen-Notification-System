@@ -33,6 +33,7 @@ import kotlinx.serialization.json.Json
 import org.example.project.database.DatabaseFactory
 import org.example.project.model.LockerRepository
 import org.example.project.model.Lockers
+import org.example.project.model.LockingAction
 import org.example.project.model.NotificationRepository
 import org.example.project.model.Roles
 import org.example.project.model.UserRepository
@@ -48,10 +49,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.mindrot.jbcrypt.BCrypt
 
 fun main() {
-    val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
-    embeddedServer(Netty, port = port, host = "172.20.10.14") {
-        module()
-    }.start(wait = true)
+
+    embeddedServer(Netty, port = 8080, host = "172.20.10.14", module = Application::module)
+        .start(wait = true)
+
 }
     fun Application.module() {
     install(ContentNegotiation) {
@@ -164,7 +165,50 @@ fun main() {
                             call.respond(HttpStatusCode.OK, statuses)
                         }
                     }
+                    post("/lockers/lock") {
+                        val lockingAction = call.receive<LockingAction>()
 
+                        // Check if locker exists using locker_id
+                        val lockerExists = lockerRepository.getLockersByLockerId(lockingAction.id).isNotEmpty()
+                        if (!lockerExists) {
+                            call.respond(HttpStatusCode.NotFound, "Locker with ID ${lockingAction.id} not found")
+                            return@post
+                        }
+
+                        // Process lock/unlock action
+                        val isUpdated = lockerRepository.updateLockerLockState(
+                            lockerId = lockingAction.id,  // locker_id reference
+                            isLocked = lockingAction.isLocked
+                        )
+
+                        if (isUpdated) {
+                            call.respond(HttpStatusCode.OK, "Locker ${lockingAction.id} has been ${if (lockingAction.isLocked) "locked" else "unlocked"}.")
+                        } else {
+                            call.respond(HttpStatusCode.InternalServerError, "Failed to update locker status")
+                        }
+                    }
+                    post("/lockers/lock") {
+                        val lockingAction = call.receive<LockingAction>()
+
+                        // Check if locker exists using locker_id
+                        val lockerExists = lockerRepository.getLockersByLockerId(lockingAction.id).isNotEmpty()
+                        if (!lockerExists) {
+                            call.respond(HttpStatusCode.NotFound, "Locker with ID ${lockingAction.id} not found")
+                            return@post
+                        }
+
+                        // Process lock/unlock action
+                        val isUpdated = lockerRepository.updateLockerLockState(
+                            lockerId = lockingAction.id,  // locker_id reference
+                            isLocked = lockingAction.isLocked
+                        )
+
+                        if (isUpdated) {
+                            call.respond(HttpStatusCode.OK, "Locker ${lockingAction.id} has been ${if (lockingAction.isLocked) "locked" else "unlocked"}.")
+                        } else {
+                            call.respond(HttpStatusCode.InternalServerError, "Failed to update locker status")
+                        }
+                    }
                     post("/lockers") {
                         try {
                             val lockerData = call.receive<Lockers>()
