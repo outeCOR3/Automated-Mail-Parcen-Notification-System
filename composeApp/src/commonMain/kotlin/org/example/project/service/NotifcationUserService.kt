@@ -9,6 +9,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.example.project.model.Lockers
 
 import org.example.project.model.LockingAction
 
@@ -37,10 +38,10 @@ class NotificationService(private val client: HttpClient) {
             }
 
             val json = response.body<String>()
-            val lockerList: List<LockingAction> = Json { ignoreUnknownKeys = true }
+            val lockerList: List<Lockers> = Json { ignoreUnknownKeys = true }
                 .decodeFromString(json)
 
-            userId = lockerList.firstOrNull()?.id
+            userId = lockerList.firstOrNull()?.userId
             true
         } catch (e: Exception) {
             errorMessage = "Error retrieving user ID: ${e.localizedMessage}"
